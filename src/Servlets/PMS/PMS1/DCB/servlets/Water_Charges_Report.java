@@ -152,7 +152,7 @@ public class Water_Charges_Report extends HttpServlet {
 							+ obj.setValue("pyear", request);
 					month_value_display += " To " + obj.month_val(obj.setValue("pmonth1", request)) + " " + year2;
 					// month_value_display+=" To "+obj.month_val(obj.setValue("pmonth1", request))+"
-					// "+obj.setValue("pyear", request);
+					// "+obj.setValue("pyear", request); Sheron
 				}
 				if (Office_id.equalsIgnoreCase("5000"))
 					Office_id = obj.setValue("office_id", request);

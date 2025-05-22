@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="DCBRECEIPTSTMT_subreport0"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="708"
+		 pageHeight="802"
+		 columnWidth="708"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="a_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="off_name" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$P{off_name}]]></defaultValueExpression>
+	</parameter>
+	<queryString><![CDATA[SELECT SUM(amount)
+FROM FAS_RECEIPT_TRANSACTION
+WHERE accounting_for_office_id=$P{office_id}
+AND cashbook_month            =$P{month}
+AND cashbook_year             =$P{year}
+and ACCOUNTING_UNIT_ID=$P{a_id}
+AND sub_ledger_type_code      =10 and ACCOUNT_HEAD_CODE in (SELECT ACCOUNT_HEAD_CODE  from PMS_DCB_RECEIPT_ACCOUNT_MAP)
+AND receipt_no               IN
+  (SELECT receipt_no
+  FROM FAS_RECEIPT_MASTER
+  WHERE accounting_for_office_id=$P{office_id}
+  AND cashbook_month            =$P{month}
+  AND cashbook_year             =$P{year}
+  and ACCOUNTING_UNIT_ID=$P{a_id}  and SUB_LEDGER_CODE  in (select BENEFICIARY_SNO from PMS_DCB_MST_BENEFICIARY  where   OFFICE_ID=$P{office_id} and status='L')
+  AND sub_ledger_type_code      =14
+  AND receipt_status = 'L' 
+  )]]></queryString>
+
+	<field name="SUM(AMOUNT)" class="java.math.BigDecimal"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="505"
+						y="0"
+						width="118"
+						height="17"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{SUM(AMOUNT)}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="505"
+						height="18"
+						backcolor="#FFFFFF"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Bold" size="13" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{off_name} + " Grand Total : "]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

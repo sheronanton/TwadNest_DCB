@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Ob_Int_Head_office"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="821"
+		 pageHeight="842"
+		 columnWidth="761"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<queryString><![CDATA[SELECT *
+FROM
+   (SELECT BENEFICIARY_NAME,
+    OFFICE_NAME,
+    BEN_TYPE_DESC,
+    SCH_NAME,office_id,
+    DECODE(OB_INT_PRV_YR_MAINT,NULL,0,OB_INT_PRV_YR_MAINT)                 AS OB_INT_PRV_YR_MAINT,
+    DECODE(OB_INT_CUR_YR_MAINT,NULL,0,OB_INT_CUR_YR_MAINT)                 AS OB_INT_CUR_YR_MAINT,
+    DECODE(OB_INT_AMT_WC,NULL,0,OB_INT_AMT_WC)                             AS OB_INT_AMT_WC,
+    DECODE(DMD_INT_UPTO_PRV_MTH_WC,NULL,0,DMD_INT_UPTO_PRV_MTH_WC)         AS DMD_INT_UPTO_PRV_MTH_WC,
+    DECODE(COLN_INT_UPTO_PRV_MTH_MAINT,NULL,0,COLN_INT_UPTO_PRV_MTH_MAINT) AS COLN_INT_UPTO_PRV_MTH_MAINT,
+    DECODE(COLN_INT_UPTO_PRV_MTH_WC,NULL,0,COLN_INT_UPTO_PRV_MTH_WC)       AS COLN_INT_UPTO_PRV_MTH_WC,
+    DECODE(OB_FOR_MTH_INT_CY_MAINT,NULL,0,OB_FOR_MTH_INT_CY_MAINT)         AS OB_FOR_MTH_INT_CY_MAINT,
+    DECODE(OB_FOR_MTH_INT_AMT_WC,NULL,0,OB_FOR_MTH_INT_AMT_WC)             AS OB_FOR_MTH_INT_AMT_WC
+  FROM
+    (
+      (
+        SELECT office_name,office_id FROM com_mst_all_offices_view  WHERE office_id IN  (SELECT office_id FROM pms_dcb_div_dist_map)
+      )rec
+      join 
+      (
+        SELECT BENEFICIARY_OB_SNO,BENEFICIARY_SNO,FIN_YEAR,MONTH,OFFICE_ID,SCH_SNO,OB_INT_PRV_YR_MAINT,OB_INT_CUR_YR_MAINT,OB_INT_AMT_WC,DMD_INT_UPTO_PRV_MTH_WC,
+                     COLN_INT_UPTO_PRV_MTH_MAINT,COLN_INT_UPTO_PRV_MTH_WC,OB_FOR_MTH_INT_CY_MAINT,DECODE(OB_FOR_MTH_INT_AMT_WC ,NULL,'0', ROUND(OB_FOR_MTH_INT_AMT_WC) ) AS OB_FOR_MTH_INT_AMT_WC
+        FROM PMS_DCB_OB_YEARLY
+        WHERE BENEFICIARY_SNO IN (SELECT BENEFICIARY_SNO FROM PMS_DCB_MST_BENEFICIARY WHERE OFFICE_ID=5982)
+        AND FIN_YEAR=2013 AND MONTH   =10
+      )a
+      on a.OFFICE_ID=rec.office_id
+      JOIN
+      ( SELECT BENEFICIARY_SNO,BENEFICIARY_NAME,BENEFICIARY_TYPE_ID FROM PMS_DCB_MST_BENEFICIARY WHERE status='L')b
+       ON a.BENEFICIARY_SNO=b.BENEFICIARY_SNO
+      JOIN ( SELECT OFFICE_ID, OFFICE_NAME FROM COM_MST_OFFICES )c
+       ON a.OFFICE_ID=c.OFFICE_ID
+      JOIN ( SELECT SCH_SNO, SCH_NAME FROM PMS_SCH_MASTER ) d
+      ON a.SCH_SNO=d.SCH_SNO
+      JOIN (SELECT BEN_TYPE_DESC,BEN_TYPE_ID,ADDRESS_TO  FROM PMS_DCB_BEN_TYPE ORDER BY BEN_TYPE_ID  ) T
+      ON T.BEN_TYPE_ID=b.BENEFICIARY_TYPE_ID
+      )
+  )rec1 
+  order by office_id,BEN_TYPE_DESC,BENEFICIARY_NAME
+ ]]></queryString>
+
+	<field name="BENEFICIARY_NAME" class="java.lang.String"/>
+	<field name="OFFICE_NAME" class="java.lang.String"/>
+	<field name="BEN_TYPE_DESC" class="java.lang.String"/>
+	<field name="SCH_NAME" class="java.lang.String"/>
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="OB_INT_PRV_YR_MAINT" class="java.math.BigDecimal"/>
+	<field name="OB_INT_CUR_YR_MAINT" class="java.math.BigDecimal"/>
+	<field name="OB_INT_AMT_WC" class="java.math.BigDecimal"/>
+	<field name="DMD_INT_UPTO_PRV_MTH_WC" class="java.math.BigDecimal"/>
+	<field name="COLN_INT_UPTO_PRV_MTH_MAINT" class="java.math.BigDecimal"/>
+	<field name="COLN_INT_UPTO_PRV_MTH_WC" class="java.math.BigDecimal"/>
+	<field name="OB_FOR_MTH_INT_CY_MAINT" class="java.math.BigDecimal"/>
+	<field name="OB_FOR_MTH_INT_AMT_WC" class="java.math.BigDecimal"/>
+
+
+		<group  name="off_name" >
+			<groupExpression><![CDATA[$F{OFFICE_NAME}]]></groupExpression>
+			<groupHeader>
+			<band height="20"  isSplitAllowed="false" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="btype" >
+			<groupExpression><![CDATA[$F{BEN_TYPE_DESC}]]></groupExpression>
+			<groupHeader>
+			<band height="20"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="30"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="7"
+						y="0"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BENEFICIARY_NAME}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="30"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

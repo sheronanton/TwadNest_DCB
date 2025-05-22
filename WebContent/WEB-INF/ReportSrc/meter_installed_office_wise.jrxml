@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="meter_installed_office_wise"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<queryString><![CDATA[select office_name,
+ decode(sum(mfct),null,0,sum(mfct)) as mfct
+ ,decode(sum(mnfct),null,0,sum(mnfct)) as mnfct
+ ,decode(sum(mwct),null,0,sum(mwct)) as mwct 
+ ,decode(sum(mnwct),null,0,sum(mnwct)) as mnwct 
+from 
+(
+ select 
+  office_name,off.office_id 
+ ,decode(mfct,null,0,mfct)  as mfct
+ ,decode(mnfct,null,0,mnfct) as mnfct
+ ,decode(mwct,null,0,mwct) as mwct
+ ,decode(mnwct,null,0,mnwct) as mnwct
+ from  
+   ( select office_name,office_id from COM_MST_ALL_OFFICES_VIEW where office_level_id='DN'   and office_id in (select office_id from pms_dcb_div_dist_map) )off
+  
+   
+    left outer join  
+    ( select count(*) as mfct ,office_id  from PMS_DCB_MST_BENEFICIARY_METRE where meter_status='L' and upper(METRE_FIXED)=upper('y')   group by office_id  )meter_fixed 
+  on  meter_fixed.OFFICE_ID=off.office_id  
+  left outer join  
+  (select count(*) as mnfct ,office_id  from PMS_DCB_MST_BENEFICIARY_METRE where meter_status='L' and upper(METRE_FIXED)=upper('n') group by office_id  )meter_not_fixed
+  on  meter_not_fixed.OFFICE_ID=off.office_id  
+  left outer join 
+( select count(*) as mwct ,office_id  from PMS_DCB_MST_BENEFICIARY_METRE where meter_status='L' and (upper(METRE_FIXED)=upper('y') and upper(METRE_WORKING)=upper('y')) group by office_id  )meter_worked 
+  on  meter_worked.OFFICE_ID=off.office_id 
+  left outer join 
+  ( select count(*) as mnwct ,office_id  from PMS_DCB_MST_BENEFICIARY_METRE where meter_status='L' and (upper(METRE_FIXED)=upper('y') and upper(METRE_WORKING)=upper('n')) group by office_id )meter_not_worked 
+  on  meter_not_worked.OFFICE_ID=off.office_id 
+   order by office_id 
+ ) group by office_id,office_name
+ order by office_id]]></queryString>
+
+	<field name="OFFICE_NAME" class="java.lang.String"/>
+	<field name="MFCT" class="java.math.BigDecimal"/>
+	<field name="MNFCT" class="java.math.BigDecimal"/>
+	<field name="MWCT" class="java.math.BigDecimal"/>
+	<field name="MNWCT" class="java.math.BigDecimal"/>
+
+	<variable name="total_meter" class="java.math.BigDecimal" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$V{total_fixed}.add($F{MNFCT}) ]]></variableExpression>
+	</variable>
+	<variable name="total_fixed" class="java.math.BigDecimal" resetType="None" calculation="Nothing">
+		<variableExpression><![CDATA[$F{MWCT}.add ($F{MNWCT})]]></variableExpression>
+	</variable>
+	<variable name="met_fixed_wrk" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{MWCT}]]></variableExpression>
+	</variable>
+	<variable name="div_tot_not_fiexed_net" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{MNFCT}]]></variableExpression>
+	</variable>
+	<variable name="div_tot_working_net" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{MWCT}]]></variableExpression>
+	</variable>
+	<variable name="div_meter_not_working_net" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{MNWCT}]]></variableExpression>
+	</variable>
+	<variable name="div_total_fixed_net" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{total_fixed}]]></variableExpression>
+	</variable>
+	<variable name="div_tot_met_net" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{total_fixed}.add($F{MNFCT})]]></variableExpression>
+	</variable>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="29"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="0"
+						y="0"
+						width="535"
+						height="29"
+						key="staticText-16"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="13" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Status of water meter installed]]></text>
+				</staticText>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="49"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="0"
+						y="0"
+						width="29"
+						height="37"
+						key="staticText-1"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Sl.No]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="37"
+						width="29"
+						height="12"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[ 
+sec.meter_fixed,first.DISTRICT_CODE,sec.BENEFICIARY_TYPE_ID,
+sec.meter_worked
+,sec.meter_not_worked
+,sec.meter_not_fixed
+,sec.bentype_desc
+,sec.BENEFICIARY_NAME
+,sec.BENEFICIARY_SNO
+from 
+
+
+(select 
+    BENEFICIARY_SNO , DISTRICT_CODE,BENEFICIARY_TYPE_ID_SUB    
+from 
+
+PMS_DCB_MST_BENEFICIARY
+
+order by BENEFICIARY_TYPE_ID_SUB,DISTRICT_CODE,BENEFICIARY_SNO
+)first
+ join
+ (
+ select mf.BENEFICIARY_SNO
+,mf.BENEFICIARY_TYPE_ID,
+decode(meter_fixed,null,0,meter_fixed) as meter_fixed,
+decode(meter_worked,null,0,meter_worked) as meter_worked
+,decode(meter_not_worked,null,0,meter_not_worked) as meter_not_worked
+,decode(meter_not_fixed,null,0,meter_not_fixed) as meter_not_fixed
+
+,BENEFICIARY_NAME,bentype_mas.bentype_desc
+ from
+ (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*)  as meter_fixed from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_FIXED)=upper('y') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mf
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_not_fixed from pms_dcb_mst_beneficiary_metre   where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_FIXED)=upper('n') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  
+  )mnf
+  on mf.BENEFICIARY_TYPE_ID=mnf.BENEFICIARY_TYPE_ID and mf.BENEFICIARY_SNO=mnf.BENEFICIARY_SNO
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_worked from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_WORKING)=upper('y') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mw
+  on mw.BENEFICIARY_TYPE_ID=mf.BENEFICIARY_TYPE_ID and mw.BENEFICIARY_SNO=mf.BENEFICIARY_SNO
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_not_worked from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_WORKING)=upper('n') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mnw
+  on mnw.BENEFICIARY_TYPE_ID=mf.BENEFICIARY_TYPE_ID and mnw.BENEFICIARY_SNO=mf.BENEFICIARY_SNO
+  join
+  (
+    select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,BENEFICIARY_NAME from PMS_DCB_MST_BENEFICIARY
+  )ben
+  on ben.BENEFICIARY_SNO=mf.BENEFICIARY_SNO  
+  left outer join
+  (
+     SELECT BEN_TYPE_ID,BEN_TYPE_DESC as bentype_desc FROM PMS_DCB_BEN_TYPE 
+  )bentype_mas
+  on bentype_mas.BEN_TYPE_ID=mf.BENEFICIARY_TYPE_ID
+  
+ order by BENEFICIARY_TYPE_ID
+ )sec
+ on sec.BENEFICIARY_SNO=first.BENEFICIARY_SNO and sec.BENEFICIARY_TYPE_ID=first.BENEFICIARY_TYPE_ID_SUB
+ order by BENEFICIARY_TYPE_ID_sub,DISTRICT_CODE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="29"
+						y="37"
+						width="236"
+						height="12"
+						key="staticText-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[ 
+sec.meter_fixed,first.DISTRICT_CODE,sec.BENEFICIARY_TYPE_ID,
+sec.meter_worked
+,sec.meter_not_worked
+,sec.meter_not_fixed
+,sec.bentype_desc
+,sec.BENEFICIARY_NAME
+,sec.BENEFICIARY_SNO
+from 
+
+
+(select 
+    BENEFICIARY_SNO , DISTRICT_CODE,BENEFICIARY_TYPE_ID_SUB    
+from 
+
+PMS_DCB_MST_BENEFICIARY
+
+order by BENEFICIARY_TYPE_ID_SUB,DISTRICT_CODE,BENEFICIARY_SNO
+)first
+ join
+ (
+ select mf.BENEFICIARY_SNO
+,mf.BENEFICIARY_TYPE_ID,
+decode(meter_fixed,null,0,meter_fixed) as meter_fixed,
+decode(meter_worked,null,0,meter_worked) as meter_worked
+,decode(meter_not_worked,null,0,meter_not_worked) as meter_not_worked
+,decode(meter_not_fixed,null,0,meter_not_fixed) as meter_not_fixed
+
+,BENEFICIARY_NAME,bentype_mas.bentype_desc
+ from
+ (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*)  as meter_fixed from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_FIXED)=upper('y') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mf
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_not_fixed from pms_dcb_mst_beneficiary_metre   where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_FIXED)=upper('n') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  
+  )mnf
+  on mf.BENEFICIARY_TYPE_ID=mnf.BENEFICIARY_TYPE_ID and mf.BENEFICIARY_SNO=mnf.BENEFICIARY_SNO
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_worked from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_WORKING)=upper('y') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mw
+  on mw.BENEFICIARY_TYPE_ID=mf.BENEFICIARY_TYPE_ID and mw.BENEFICIARY_SNO=mf.BENEFICIARY_SNO
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_not_worked from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_WORKING)=upper('n') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mnw
+  on mnw.BENEFICIARY_TYPE_ID=mf.BENEFICIARY_TYPE_ID and mnw.BENEFICIARY_SNO=mf.BENEFICIARY_SNO
+  join
+  (
+    select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,BENEFICIARY_NAME from PMS_DCB_MST_BENEFICIARY
+  )ben
+  on ben.BENEFICIARY_SNO=mf.BENEFICIARY_SNO  
+  left outer join
+  (
+     SELECT BEN_TYPE_ID,BEN_TYPE_DESC as bentype_desc FROM PMS_DCB_BEN_TYPE 
+  )bentype_mas
+  on bentype_mas.BEN_TYPE_ID=mf.BENEFICIARY_TYPE_ID
+  
+ order by BENEFICIARY_TYPE_ID
+ )sec
+ on sec.BENEFICIARY_SNO=first.BENEFICIARY_SNO and sec.BENEFICIARY_TYPE_ID=first.BENEFICIARY_TYPE_ID_SUB
+ order by BENEFICIARY_TYPE_ID_sub,DISTRICT_CODE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="29"
+						y="0"
+						width="236"
+						height="37"
+						key="staticText-4"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Office Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="265"
+						y="0"
+						width="55"
+						height="37"
+						key="staticText-5"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Tapping Locations	 ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="265"
+						y="37"
+						width="55"
+						height="12"
+						key="staticText-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[(A=B+E)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="320"
+						y="0"
+						width="62"
+						height="37"
+						key="staticText-7"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Meter Not Fixed 
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="320"
+						y="37"
+						width="62"
+						height="12"
+						key="staticText-8"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[(B)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="382"
+						y="12"
+						width="47"
+						height="25"
+						key="staticText-9"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Working	]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="382"
+						y="0"
+						width="153"
+						height="12"
+						key="staticText-10"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Meter fixed]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="429"
+						y="12"
+						width="59"
+						height="25"
+						key="staticText-11"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Not Working	]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="488"
+						y="12"
+						width="47"
+						height="25"
+						key="staticText-12"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="488"
+						y="37"
+						width="47"
+						height="12"
+						key="staticText-13"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[(E=C+D)
+sec.meter_fixed,first.DISTRICT_CODE,sec.BENEFICIARY_TYPE_ID,
+sec.meter_worked
+,sec.meter_not_worked
+,sec.meter_not_fixed
+,sec.bentype_desc
+,sec.BENEFICIARY_NAME
+,sec.BENEFICIARY_SNO
+from 
+
+
+(select 
+    BENEFICIARY_SNO , DISTRICT_CODE,BENEFICIARY_TYPE_ID_SUB    
+from 
+
+PMS_DCB_MST_BENEFICIARY
+
+order by BENEFICIARY_TYPE_ID_SUB,DISTRICT_CODE,BENEFICIARY_SNO
+)first
+ join
+ (
+ select mf.BENEFICIARY_SNO
+,mf.BENEFICIARY_TYPE_ID,
+decode(meter_fixed,null,0,meter_fixed) as meter_fixed,
+decode(meter_worked,null,0,meter_worked) as meter_worked
+,decode(meter_not_worked,null,0,meter_not_worked) as meter_not_worked
+,decode(meter_not_fixed,null,0,meter_not_fixed) as meter_not_fixed
+
+,BENEFICIARY_NAME,bentype_mas.bentype_desc
+ from
+ (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*)  as meter_fixed from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_FIXED)=upper('y') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mf
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_not_fixed from pms_dcb_mst_beneficiary_metre   where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_FIXED)=upper('n') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  
+  )mnf
+  on mf.BENEFICIARY_TYPE_ID=mnf.BENEFICIARY_TYPE_ID and mf.BENEFICIARY_SNO=mnf.BENEFICIARY_SNO
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_worked from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_WORKING)=upper('y') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mw
+  on mw.BENEFICIARY_TYPE_ID=mf.BENEFICIARY_TYPE_ID and mw.BENEFICIARY_SNO=mf.BENEFICIARY_SNO
+  left outer join  
+  (
+  select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,count(*) as meter_not_worked from pms_dcb_mst_beneficiary_metre where 
+  METRE_SNO in (select METRE_SNO from PMS_DCB_TRN_MONTHLY_PR  where month=3 and year=2014) and 
+  upper(METRE_WORKING)=upper('n') and METER_STATUS='L'
+  group by BENEFICIARY_TYPE_ID,BENEFICIARY_SNO
+  )mnw
+  on mnw.BENEFICIARY_TYPE_ID=mf.BENEFICIARY_TYPE_ID and mnw.BENEFICIARY_SNO=mf.BENEFICIARY_SNO
+  join
+  (
+    select BENEFICIARY_SNO,BENEFICIARY_TYPE_ID,BENEFICIARY_NAME from PMS_DCB_MST_BENEFICIARY
+  )ben
+  on ben.BENEFICIARY_SNO=mf.BENEFICIARY_SNO  
+  left outer join
+  (
+     SELECT BEN_TYPE_ID,BEN_TYPE_DESC as bentype_desc FROM PMS_DCB_BEN_TYPE 
+  )bentype_mas
+  on bentype_mas.BEN_TYPE_ID=mf.BENEFICIARY_TYPE_ID
+  
+ order by BENEFICIARY_TYPE_ID
+ )sec
+ on sec.BENEFICIARY_SNO=first.BENEFICIARY_SNO and sec.BENEFICIARY_TYPE_ID=first.BENEFICIARY_TYPE_ID_SUB
+ order by BENEFICIARY_TYPE_ID_sub,DISTRICT_CODE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="429"
+						y="37"
+						width="59"
+						height="12"
+						key="staticText-14"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[(D)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="382"
+						y="37"
+						width="47"
+						height="12"
+						key="staticText-15"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[(C)]]></text>
+				</staticText>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="29"
+						y="0"
+						width="236"
+						height="20"
+						key="textField-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="15" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{OFFICE_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="265"
+						y="0"
+						width="55"
+						height="20"
+						key="textField-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="8" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{total_meter}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="320"
+						y="0"
+						width="62"
+						height="20"
+						key="textField-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="8" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{MNFCT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="382"
+						y="0"
+						width="47"
+						height="20"
+						key="textField-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="8" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{MWCT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="429"
+						y="0"
+						width="59"
+						height="20"
+						key="textField-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="8" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{MNWCT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="488"
+						y="0"
+						width="47"
+						height="20"
+						key="textField-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{total_fixed}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="29"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="20"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="0"
+						y="0"
+						width="265"
+						height="20"
+						key="staticText-17"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="9"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="265"
+						y="0"
+						width="55"
+						height="20"
+						key="textField-7"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{div_tot_met_net}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="320"
+						y="0"
+						width="62"
+						height="20"
+						key="textField-8"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{div_tot_not_fiexed_net}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="382"
+						y="0"
+						width="47"
+						height="20"
+						key="textField-9"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{div_tot_working_net}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="429"
+						y="0"
+						width="59"
+						height="20"
+						key="textField-10"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{div_meter_not_working_net}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="488"
+						y="0"
+						width="47"
+						height="20"
+						key="textField-11"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="7" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{div_total_fixed_net}]]></textFieldExpression>
+				</textField>
+			</band>
+		</summary>
+</jasperReport>

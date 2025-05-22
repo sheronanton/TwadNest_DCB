@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Fin_Year_Report1_New"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="1045"
+		 pageHeight="842"
+		 columnWidth="988"
+		 columnSpacing="0"
+		 leftMargin="57"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="off_name" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="imgpath" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="finyear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year1" isForPrompting="true" class="java.lang.Integer"/>
+	<queryString><![CDATA[SELECT  sum(ac.OPENING_BAL_MC_3)         AS OPENING_BAL_MC_3,
+	 sum(  ac.ADDNS_IF_ANY_3A)                AS ADDNS_IF_ANY_3A ,
+ 	sum(  ac.COL_UTO_PRV_MNH_MC_4)           AS COL_UTO_PRV_MNH_MC_4 ,
+ 	sum(  ac.COLL_FOR_MTH_MAINT_5)                 AS COLL_FOR_MTH_MAINT_5,
+ 	sum(  ac.TOTAL_COLLN_6)                 AS TOTAL_COLLN_6,
+	sum(  ac.BALANCE_7)                      AS BALANCE_7,
+ 	sum(  ac.OPENING_BAL_WC_8)               AS OPENING_BAL_WC_8,
+ 	sum(  ac.DMD_UPTO_PRV_MNTH_WC_9)        AS DMD_UPTO_PRV_MNTH_WC_9,
+ 	sum(  ac.DMD_FOR_MTH_WC_10)              AS DMD_FOR_MTH_WC_10,
+ 	sum(  ac.TOTAL_DUES_11)                 AS TOTAL_DUES_11,
+	sum(ac.COLN_UPTO_PRV_MTH_YES_YR_WC_12) AS COLN_UPTO_PRV_MTH_YES_YR_WC_12,
+   	sum(ac.COLN_UPTO_PRV_MTH_CR_YR_DMD_13) AS COLN_UPTO_PRV_MTH_CR_YR_DMD_13,
+   	sum(ac.COLN_FOR_MTH_YES_YR_WC_14)      AS COLN_FOR_MTH_YES_YR_WC_14,
+ --  	trunc(ac.COLN_FOR_MTH_WC_15)              AS COLN_FOR_MTH_WC_15,
+  	sum( ac.TOT_COLN_YES_YR_DMD_16)        AS TOT_COLN_YES_YR_DMD_16,
+ 	sum(  ac.TOT_COLN_FOR_YR_DMD_17)         AS TOT_COLN_FOR_YR_DMD_17,
+	sum(  ac.BALANCE_18)                     AS BALANCE_18,
+  	sum( ac.NET_DUE_19 )                   AS NET_DUE_19,
+		dis.DISTRICT_NAME                 AS DISTRICT_NAME,DISTRICT_CODE,
+  sum(rpt2.COLN_FOR_MTH_WC_15_new)   as COLN_FOR_MTH_WC_15
+FROM
+  (SELECT DECODE(SUM(OPENING_BAL_MC),NULL,0.0,SUM(OPENING_BAL_MC))                      AS OPENING_BAL_MC_3,
+    DECODE(SUM(ADDNS_IF_ANY),NULL,0.0,SUM(ADDNS_IF_ANY))                                AS ADDNS_IF_ANY_3A,
+    DECODE(SUM(COL_UTO_PRV_MNH_MC),NULL,0.0,SUM(COL_UTO_PRV_MNH_MC))                    AS COL_UTO_PRV_MNH_MC_4,
+    DECODE(SUM(COLL_FOR_MTH_MAINT),NULL,0.0,SUM(COLL_FOR_MTH_MAINT))                    AS COLL_FOR_MTH_MAINT_5,
+    DECODE(SUM(TOTAL_COLLN),NULL,0.0,SUM(TOTAL_COLLN))                                  AS TOTAL_COLLN_6,
+    DECODE(SUM(BALANCE),NULL,0.0,SUM(BALANCE))                                          AS BALANCE_7,
+    DECODE(SUM(OPENING_BAL_WC),NULL,0.0,SUM(OPENING_BAL_WC))                            AS OPENING_BAL_WC_8,
+    DECODE(SUM(DMD_UPTO_PRV_MNTH_WC),NULL,0.0,SUM(DMD_UPTO_PRV_MNTH_WC))                AS DMD_UPTO_PRV_MNTH_WC_9,
+    DECODE(SUM(DMD_FOR_MTH_WC),NULL,0.0,SUM(DMD_FOR_MTH_WC))                            AS DMD_FOR_MTH_WC_10,
+    DECODE(SUM(TOTAL_DUES),NULL,0.0,SUM(TOTAL_DUES))                                    AS TOTAL_DUES_11,
+    DECODE(SUM(COLN_UPTO_PRV_MTH_YES_YR_WC),NULL,0.0,SUM(COLN_UPTO_PRV_MTH_YES_YR_WC))  AS COLN_UPTO_PRV_MTH_YES_YR_WC_12,
+    DECODE(SUM(COLN_UPTO_PRV_MTH_CR_YR_DMD),NULL,0.0,SUM(COLN_UPTO_PRV_MTH_CR_YR_DMD))  AS COLN_UPTO_PRV_MTH_CR_YR_DMD_13,
+    DECODE(SUM(COLN_FOR_MTH_YES_YR_WC),NULL,0.0,SUM(COLN_FOR_MTH_YES_YR_WC))            AS COLN_FOR_MTH_YES_YR_WC_14,
+    DECODE(SUM(COLN_INCLUDE_CHARGES),NULL,0.0,SUM(COLN_INCLUDE_CHARGES))                          AS COLN_FOR_MTH_WC_15,
+    DECODE(SUM(TOT_COLN_YES_YR_DMD),NULL,0.0,SUM(TOT_COLN_YES_YR_DMD))                  AS TOT_COLN_YES_YR_DMD_16,
+    DECODE(SUM(TOT_COLN_FOR_YR_DMD),NULL,0.0,SUM(TOT_COLN_FOR_YR_DMD))                  AS TOT_COLN_FOR_YR_DMD_17,
+    DECODE(SUM(BALANCE_18),NULL,0.0,SUM(BALANCE_18))                                    AS BALANCE_18,
+    DECODE(SUM(NET_DUE),NULL,0.0,SUM(NET_DUE))                                          AS NET_DUE_19,
+ 
+    DISTRICT_CODE,  
+    BENEFICIARY_SNO 
+    
+  FROM PMS_DCB_LEDGER_ACTUAL 
+  WHERE YEAR   =$P{year}
+  AND MONTH    =4
+ 
+  GROUP BY   
+    DISTRICT_CODE ,
+    BENEFICIARY_SNO 
+  )ac
+ 
+  
+LEFT JOIN
+  ( SELECT DISTINCT DISTRICT_NAME, district_code FROM PMS_DCB_LEDGER_ACTUAL  
+  )dis
+ON dis.district_code=ac.district_code
+ 
+LEFT  join
+  (
+  SELECT  DECODE(SUM(COLN_INCLUDE_CHARGES),NULL,0.0,SUM(COLN_INCLUDE_CHARGES))  AS COLN_FOR_MTH_WC_15_new,  DISTRICT_CODE,    BENEFICIARY_SNO    
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE  (to_date((01 || '-' || month || '-' || year),'dd-MM-yyyy') >= to_date('1-4-' || $P{year},'dd-mm-yyyy')) and    (to_date((01 || '-' || month || '-' || year),'dd-MM-yyyy') <= to_date('31-3-'||$P{year1},'dd-mm-yyyy'))	
+  GROUP BY DISTRICT_CODE ,BENEFICIARY_SNO
+  )rpt2
+  on     
+    rpt2.BENEFICIARY_SNO=ac.BENEFICIARY_SNO   
+    and rpt2.DISTRICT_CODE=ac.DISTRICT_CODE
+    group by DISTRICT_CODE,DISTRICT_NAME
+ORDER BY   DISTRICT_CODE]]></queryString>
+
+	<field name="OPENING_BAL_MC_3" class="java.math.BigDecimal"/>
+	<field name="ADDNS_IF_ANY_3A" class="java.math.BigDecimal"/>
+	<field name="COL_UTO_PRV_MNH_MC_4" class="java.math.BigDecimal"/>
+	<field name="COLL_FOR_MTH_MAINT_5" class="java.math.BigDecimal"/>
+	<field name="TOTAL_COLLN_6" class="java.math.BigDecimal"/>
+	<field name="BALANCE_7" class="java.math.BigDecimal"/>
+	<field name="OPENING_BAL_WC_8" class="java.math.BigDecimal"/>
+	<field name="DMD_UPTO_PRV_MNTH_WC_9" class="java.math.BigDecimal"/>
+	<field name="DMD_FOR_MTH_WC_10" class="java.math.BigDecimal"/>
+	<field name="TOTAL_DUES_11" class="java.math.BigDecimal"/>
+	<field name="COLN_UPTO_PRV_MTH_YES_YR_WC_12" class="java.math.BigDecimal"/>
+	<field name="COLN_UPTO_PRV_MTH_CR_YR_DMD_13" class="java.math.BigDecimal"/>
+	<field name="COLN_FOR_MTH_YES_YR_WC_14" class="java.math.BigDecimal"/>
+	<field name="TOT_COLN_YES_YR_DMD_16" class="java.math.BigDecimal"/>
+	<field name="TOT_COLN_FOR_YR_DMD_17" class="java.math.BigDecimal"/>
+	<field name="BALANCE_18" class="java.math.BigDecimal"/>
+	<field name="NET_DUE_19" class="java.math.BigDecimal"/>
+	<field name="DISTRICT_NAME" class="java.lang.String"/>
+	<field name="DISTRICT_CODE" class="java.math.BigDecimal"/>
+	<field name="COLN_FOR_MTH_WC_15" class="java.math.BigDecimal"/>
+
+	<variable name="SUM_OPENING_BAL_MC_3" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{OPENING_BAL_MC_3}]]></variableExpression>
+	</variable>
+	<variable name="SUM_ADDNS_IF_ANY_3A" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{ADDNS_IF_ANY_3A}]]></variableExpression>
+	</variable>
+	<variable name="SUM_COL_UTO_PRV_MNH_MC_4" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COL_UTO_PRV_MNH_MC_4}]]></variableExpression>
+	</variable>
+	<variable name="SUM_COLL_FOR_MTH_MAINT_5" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLL_FOR_MTH_MAINT_5}]]></variableExpression>
+	</variable>
+	<variable name="SUM_TOTAL_COLLN_6" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_COLLN_6}]]></variableExpression>
+	</variable>
+	<variable name="SUM_BALANCE_7" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{BALANCE_7}]]></variableExpression>
+	</variable>
+	<variable name="SUM_OPENING_BAL_WC_8" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{OPENING_BAL_WC_8}]]></variableExpression>
+	</variable>
+	<variable name="SUM_DMD_UPTO_PRV_MNTH_WC_9" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{DMD_UPTO_PRV_MNTH_WC_9}]]></variableExpression>
+	</variable>
+	<variable name="SUM_DMD_FOR_MTH_WC_10" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{DMD_FOR_MTH_WC_10}]]></variableExpression>
+	</variable>
+	<variable name="SUM_TOTAL_DUES_11" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_DUES_11}]]></variableExpression>
+	</variable>
+	<variable name="SUM_COLN_UPTO_PRV_MTH_YES_YR_WC_12" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_UPTO_PRV_MTH_YES_YR_WC_12}]]></variableExpression>
+	</variable>
+	<variable name="SUM_COLN_UPTO_PRV_MTH_CR_YR_DMD_13" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_UPTO_PRV_MTH_CR_YR_DMD_13}]]></variableExpression>
+	</variable>
+	<variable name="SUM_COLN_FOR_MTH_YES_YR_WC_14" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_FOR_MTH_YES_YR_WC_14}]]></variableExpression>
+	</variable>
+	<variable name="SUM_COLN_FOR_MTH_WC_15" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_FOR_MTH_WC_15}]]></variableExpression>
+	</variable>
+	<variable name="SUM_TOT_COLN_YES_YR_DMD_16" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOT_COLN_YES_YR_DMD_16}]]></variableExpression>
+	</variable>
+	<variable name="SUM_TOT_COLN_FOR_YR_DMD_17" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_FOR_MTH_WC_15}]]></variableExpression>
+	</variable>
+	<variable name="SUM_BALANCE_18" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{BALANCE_18}]]></variableExpression>
+	</variable>
+	<variable name="SUM_NET_DUE_19" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{NET_DUE_19}]]></variableExpression>
+	</variable>
+	<variable name="total_demand" class="java.math.BigDecimal" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$F{DMD_FOR_MTH_WC_10}.add($F{DMD_UPTO_PRV_MNTH_WC_9})]]></variableExpression>
+	</variable>
+	<variable name="total_demand_dis" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{DMD_FOR_MTH_WC_10}.add($F{DMD_UPTO_PRV_MNTH_WC_9})]]></variableExpression>
+	</variable>
+	<variable name="total_demand_type" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{DMD_FOR_MTH_WC_10}.add($F{DMD_UPTO_PRV_MNTH_WC_9})]]></variableExpression>
+	</variable>
+	<variable name="gt_total_demand" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{DMD_FOR_MTH_WC_10}.add($F{DMD_UPTO_PRV_MNTH_WC_9})]]></variableExpression>
+	</variable>
+	<variable name="v1" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{OPENING_BAL_MC_3}]]></variableExpression>
+	</variable>
+	<variable name="v2" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{ADDNS_IF_ANY_3A}]]></variableExpression>
+	</variable>
+	<variable name="v3" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_COLLN_6}]]></variableExpression>
+	</variable>
+	<variable name="v4" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{BALANCE_7}]]></variableExpression>
+	</variable>
+	<variable name="v5" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{OPENING_BAL_WC_8}]]></variableExpression>
+	</variable>
+	<variable name="v6" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{total_demand}]]></variableExpression>
+	</variable>
+	<variable name="v7" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_DUES_11}]]></variableExpression>
+	</variable>
+	<variable name="v8" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOT_COLN_YES_YR_DMD_16}]]></variableExpression>
+	</variable>
+	<variable name="v9" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_FOR_MTH_WC_15}]]></variableExpression>
+	</variable>
+	<variable name="v10" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{BALANCE_18}]]></variableExpression>
+	</variable>
+	<variable name="v11" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{NET_DUE_19}]]></variableExpression>
+	</variable>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="140"  isSplitAllowed="false" >
+				<staticText>
+					<reportElement
+						x="197"
+						y="31"
+						width="230"
+						height="32"
+						key="staticText-1"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Maintenance Charges]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="361"
+						y="63"
+						width="66"
+						height="77"
+						forecolor="#000000"
+						key="staticText-2"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Balance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="298"
+						y="63"
+						width="63"
+						height="77"
+						forecolor="#000000"
+						key="staticText-3"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Collection]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="249"
+						y="63"
+						width="49"
+						height="77"
+						forecolor="#000000"
+						key="staticText-6"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Addns if any]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="197"
+						y="63"
+						width="52"
+						height="77"
+						forecolor="#000000"
+						key="staticText-7"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Opening Balance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="38"
+						y="31"
+						width="159"
+						height="109"
+						forecolor="#000000"
+						key="staticText-8"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Beneficiary]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="1"
+						y="31"
+						width="37"
+						height="109"
+						key="staticText-9"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Sno]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="509"
+						y="63"
+						width="75"
+						height="77"
+						forecolor="#000000"
+						key="staticText-19"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Demand]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="660"
+						y="98"
+						width="71"
+						height="42"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-24"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ Yester Year
+Demand]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="731"
+						y="98"
+						width="80"
+						height="42"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-25"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ Current Year
+Demand]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="660"
+						y="63"
+						width="151"
+						height="35"
+						key="staticText-28"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Collection]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="427"
+						y="31"
+						width="384"
+						height="32"
+						key="staticText-29"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Water Charges]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="427"
+						y="63"
+						width="82"
+						height="77"
+						forecolor="#000000"
+						key="staticText-30"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Opening 
+Balance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="811"
+						y="31"
+						width="71"
+						height="109"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-32"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Balance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="882"
+						y="31"
+						width="70"
+						height="109"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-33"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Net Due]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="584"
+						y="63"
+						width="76"
+						height="77"
+						forecolor="#000000"
+						key="staticText-38"
+						positionType="Float"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Dues]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="3"
+						width="952"
+						height="27"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font size="14"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[" DCB Financial Year Statement "+  $P{finyear}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="38"
+						y="0"
+						width="159"
+						height="18"
+						key="textField-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DISTRICT_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="197"
+						y="0"
+						width="52"
+						height="18"
+						forecolor="#000000"
+						key="textField-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{OPENING_BAL_MC_3}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="249"
+						y="0"
+						width="49"
+						height="18"
+						forecolor="#000000"
+						key="textField-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ADDNS_IF_ANY_3A}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="298"
+						y="0"
+						width="63"
+						height="18"
+						forecolor="#000000"
+						key="textField-8"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{TOTAL_COLLN_6}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="361"
+						y="0"
+						width="66"
+						height="18"
+						forecolor="#000000"
+						key="textField-9"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{BALANCE_7}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="427"
+						y="0"
+						width="82"
+						height="18"
+						forecolor="#000000"
+						key="textField-10"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{OPENING_BAL_WC_8}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="660"
+						y="0"
+						width="71"
+						height="18"
+						forecolor="#000000"
+						key="textField-18"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{TOT_COLN_YES_YR_DMD_16}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="731"
+						y="0"
+						width="80"
+						height="18"
+						forecolor="#000000"
+						key="textField-19"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COLN_FOR_MTH_WC_15}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="882"
+						y="0"
+						width="70"
+						height="18"
+						forecolor="#000000"
+						key="textField-20"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{NET_DUE_19}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="811"
+						y="0"
+						width="71"
+						height="18"
+						forecolor="#000000"
+						key="textField-21"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{BALANCE_18}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="509"
+						y="0"
+						width="75"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{total_demand}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="584"
+						y="0"
+						width="76"
+						height="18"
+						forecolor="#000000"
+						key="textField-77"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{TOTAL_DUES_11}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="0"
+						width="37"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="19"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="197"
+						y="0"
+						width="52"
+						height="18"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="249"
+						y="0"
+						width="52"
+						height="18"
+						key="textField-78"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="301"
+						y="0"
+						width="60"
+						height="18"
+						key="textField-79"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v3}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="361"
+						y="0"
+						width="66"
+						height="18"
+						key="textField-80"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v4}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="427"
+						y="0"
+						width="82"
+						height="18"
+						forecolor="#000000"
+						key="textField-81"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v5}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="509"
+						y="0"
+						width="75"
+						height="18"
+						key="textField-82"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v6}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="584"
+						y="0"
+						width="76"
+						height="18"
+						forecolor="#000000"
+						key="textField-83"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v7}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="660"
+						y="0"
+						width="71"
+						height="18"
+						forecolor="#000000"
+						key="textField-84"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v8}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="731"
+						y="0"
+						width="80"
+						height="18"
+						forecolor="#000000"
+						key="textField-85"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v9}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="811"
+						y="0"
+						width="71"
+						height="18"
+						forecolor="#000000"
+						key="textField-86"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v10}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="882"
+						y="0"
+						width="70"
+						height="18"
+						forecolor="#000000"
+						key="textField-87"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{v11}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="1"
+						y="0"
+						width="196"
+						height="18"
+						key="staticText-39"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="18" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Total
+]]></text>
+				</staticText>
+			</band>
+		</summary>
+</jasperReport>

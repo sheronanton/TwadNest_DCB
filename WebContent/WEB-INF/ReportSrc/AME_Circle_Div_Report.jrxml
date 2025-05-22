@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="AME_Circle_Div_Report"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="877"
+		 pageHeight="842"
+		 columnWidth="877"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<queryString><![CDATA[SELECT Off1.OFFICE_NAME AS reg,  off2.OFFICE_NAME      AS cir,off3.OFFICE_NAME      AS div,
+  off3.OFFICE_ID,rur.qty as rqty,ur.qty as uqty,comm.qty as cqty,sch.sch_name
+FROM (
+  (SELECT REGION_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='RN'
+  )Off1
+JOIN
+  (SELECT REGION_OFFICE_ID,
+    CIRCLE_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='CL'
+  )Off2
+ON Off2.REGION_OFFICE_ID=off1.OFFICE_ID
+JOIN
+  (SELECT REGION_OFFICE_ID,
+    CIRCLE_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='DN' and OFFICE_ID in (select OFFICE_ID from pms_dcb_trn_monthly_pr)
+  )Off3
+ON Off3.REGION_OFFICE_ID =off1.OFFICE_ID
+AND Off3.CIRCLE_OFFICE_ID=off2.OFFICE_ID ) 
+join
+( 
+  select sum(QTY_CONSUMED_NET) as qty,OFFICE_ID,sch_sno  from PMS_DCB_TRN_MONTHLY_PR where year=2013 and month=6
+  and BENEFICIARY_SNO in (select BENEFICIARY_SNO from pms_dcb_mst_beneficiary where beneficiary_type_id =6)
+  group by OFFICE_ID,sch_sno
+)rur 
+on rur.OFFICE_ID=off3.OFFICE_ID  
+join
+( 
+  select sum(QTY_CONSUMED_NET) as qty,OFFICE_ID,sch_sno  from PMS_DCB_TRN_MONTHLY_PR where year=2013 and month=6
+  and BENEFICIARY_SNO in (select BENEFICIARY_SNO from pms_dcb_mst_beneficiary where beneficiary_type_id in (1,2,3,4,5))
+  group by OFFICE_ID,sch_sno
+)ur 
+on ur.OFFICE_ID=off3.OFFICE_ID  
+join
+( 
+  select sum(QTY_CONSUMED_NET) as qty,OFFICE_ID,sch_sno  from PMS_DCB_TRN_MONTHLY_PR where year=2013 and month=6
+  and BENEFICIARY_SNO in (select BENEFICIARY_SNO from pms_dcb_mst_beneficiary where beneficiary_type_id > 6 )
+  group by OFFICE_ID,sch_sno
+)comm
+on comm.OFFICE_ID=off3.OFFICE_ID  
+join
+(
+  select sch_name,sch_sno from pms_sch_master
+) sch 
+on ur.sch_sno=sch.sch_sno  
+
+order by Off1.OFFICE_NAME,Off2.OFFICE_NAME,Off3.OFFICE_NAME
+
+
+
+
+]]></queryString>
+
+	<field name="REG" class="java.lang.String"/>
+	<field name="CIR" class="java.lang.String"/>
+	<field name="DIV" class="java.lang.String"/>
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="RQTY" class="java.math.BigDecimal"/>
+	<field name="UQTY" class="java.math.BigDecimal"/>
+	<field name="CQTY" class="java.math.BigDecimal"/>
+	<field name="SCH_NAME" class="java.lang.String"/>
+
+
+		<group  name="reg" >
+			<groupExpression><![CDATA[$F{REG}]]></groupExpression>
+			<groupHeader>
+			<band height="21"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="278"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{REG}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="cr" >
+			<groupExpression><![CDATA[$F{CIR}]]></groupExpression>
+			<groupHeader>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="23"
+						y="0"
+						width="279"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CIR}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="dv" >
+			<groupExpression><![CDATA[$F{DIV}]]></groupExpression>
+			<groupHeader>
+			<band height="44"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="49"
+						y="0"
+						width="255"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DIV}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="25"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="316"
+						y="0"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{UQTY}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="49"
+						y="0"
+						width="267"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SCH_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="416"
+						y="0"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{UQTY}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="516"
+						y="0"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CQTY}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

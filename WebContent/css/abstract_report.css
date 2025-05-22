@@ -1,0 +1,18 @@
+@CHARSET "ISO-8859-1";
+.table
+{
+    background-color: rgb(252,217,175);  
+    color: rgb(115,115,00);
+     font-family: Arial;
+}
+th{
+    background-color: rgb(231,231,231);
+      color: rgb(128,00,128);
+}
+.tdH
+{
+    background-color:#B5C3F6;
+     font-family: Arial;
+     
+   
+}

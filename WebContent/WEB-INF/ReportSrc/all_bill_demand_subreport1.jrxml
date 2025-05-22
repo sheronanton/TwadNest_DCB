@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="all_bill_demand_subreport1"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="535"
+		 pageHeight="802"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="ben" isForPrompting="true" class="java.lang.Integer"/>
+	<queryString><![CDATA[select 
+case when a.MONTH_RECTIFY=1 then 'January'
+     when a.MONTH_RECTIFY=2 then 'February'
+     when a.MONTH_RECTIFY=3 then 'March'
+     when a.MONTH_RECTIFY=4 then 'April'
+     when a.MONTH_RECTIFY=5 then 'May'
+     when a.MONTH_RECTIFY=6 then 'June'
+     when a.MONTH_RECTIFY=7 then 'July'
+     when a.MONTH_RECTIFY=8 then 'August'
+     when a.MONTH_RECTIFY=9 then 'September'       
+     when a.MONTH_RECTIFY=10 then 'October'
+     when a.MONTH_RECTIFY=11 then 'November'
+     when a.MONTH_RECTIFY=12 then 'December'
+  end as  montval ,
+sum(b.amt_rectify) AS amt,sum(b.QTY_RECTIFY) as qty,  a.month_rectify as mon,a.year_rectify  from PMS_DCB_MONTHLY_PR a , PMS_DCB_TRN_MONTHLY_PR b  where a.beneficiary_sno=b.beneficiary_sno
+and b.office_id = a.office_id and b.month = a.month and b.year = a.year
+and a.year=$P{year} and a.month=$P{month} and b.beneficiary_sno=$P{ben} and b.office_id=$P{office_id}
+
+group by b.beneficiary_sno,a.month,a.month_rectify  ,a.year_rectify]]></queryString>
+
+	<field name="MONTVAL" class="java.lang.String"/>
+	<field name="AMT" class="java.math.BigDecimal"/>
+	<field name="QTY" class="java.math.BigDecimal"/>
+	<field name="MON" class="java.math.BigDecimal"/>
+	<field name="YEAR_RECTIFY" class="java.math.BigDecimal"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="19"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="0"
+						y="0"
+						width="121"
+						height="17"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Rectification Particular : ]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="121"
+						y="0"
+						width="414"
+						height="17"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{MONTVAL}+" "+$F{YEAR_RECTIFY} + " Qty : " +$F{QTY}+"  Amount : "+$F{AMT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

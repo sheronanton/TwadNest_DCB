@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="MDReviewReporHO_subreport0"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="557"
+		 pageHeight="802"
+		 columnWidth="557"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="pyear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="pmonth" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="ben_type" isForPrompting="true" class="java.math.BigDecimal"/>
+	<queryString><![CDATA[SELECT
+  case 
+	when (NET_DUE19-col10) > 1000 then
+ 		(NET_DUE19-col10)/100000
+	else
+	0
+	end
+as 
+ arrdmd,
+   case 
+	when (( (col14+col15)-col10))< 0.00 then 0
+	else
+ 	(( (col14+col15)-col10)) /100000 
+	end 	 
+	as arrcol,
+  case 
+	when (  ((col14+col15)-col10)=0)
+	then 0
+	else
+		CASE
+		   WHEN ROUND (  (NET_DUE19-col10),2) > 0   THEN
+        	   ( (  (col14+col15)-col10 )*100) / (NET_DUE19-col10)
+		   ELSE
+		   NULL
+		END
+	end 
+         AS  avg1,
+       col10/100000 AS curdmd,
+    case 
+    when (col14+col15) >  col10
+    then col10/100000
+    else    
+    (col14+col15)/100000 
+    end 
+    
+AS
+  curcoll,
+  CASE
+  WHEN (col14+col15) >0 THEN
+ 
+	case 
+		when  ((col14+col15)) > (col10)
+                then 100
+                else  
+		-- ((   (col14+col15) / 100000) *100) / (col10/100000) 
+                 ( (ROUND((col14+col15)/100000,2)) / ROUND (col10/100000,2) )*100
+	end
+
+
+
+
+
+  
+  ELSE
+    NULL
+  END
+AS
+  avg2 FROM
+  (SELECT SUM(NET_DUE)          AS NET_DUE19,
+    SUM(COLN_FOR_MTH_YES_YR_WC) AS col14,
+    SUM(DMD_FOR_MTH_WC) AS col10 ,
+    BEN_TYPE_ID
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE YEAR     =2012
+  AND MONTH      =3
+  
+  AND BEN_TYPE_ID=$P{ben_type}
+  GROUP BY 
+    BEN_TYPE_ID
+  )arr JOIN
+  (SELECT SUM(COLN_FOR_MTH_WC)        AS col15,
+  
+    BEN_TYPE_ID
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE YEAR   =2012
+  AND MONTH    =4
+
+  GROUP BY 
+    BEN_TYPE_ID
+  )arrcol ON   arrcol.BEN_TYPE_ID=arr.BEN_TYPE_ID]]></queryString>
+
+	<field name="ARRDMD" class="java.math.BigDecimal"/>
+	<field name="ARRCOL" class="java.math.BigDecimal"/>
+	<field name="AVG1" class="java.math.BigDecimal"/>
+	<field name="CURDMD" class="java.math.BigDecimal"/>
+	<field name="CURCOLL" class="java.math.BigDecimal"/>
+	<field name="AVG2" class="java.math.BigDecimal"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="22"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="208"
+						y="2"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ARRDMD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="266"
+						y="2"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ARRCOL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="324"
+						y="2"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="382"
+						y="2"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CURDMD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="440"
+						y="2"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CURCOLL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="498"
+						y="2"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="1"
+						y="2"
+						width="208"
+						height="19"
+						key="staticText-1"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Total]]></text>
+				</staticText>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

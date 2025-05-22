@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="sud_div_2"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="593"
+		 columnSpacing="0"
+		 leftMargin="1"
+		 rightMargin="1"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="ctxpath" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="DISTRICT_CODE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$F{DISTRICT_CODE}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="OFFICE_ID" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$F{OFFICE_ID}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BEN_TYPE_ID" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$F{BEN_TYPE_ID}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SCH_TYPE_ID" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$F{SCH_TYPE_ID}]]></defaultValueExpression>
+	</parameter>
+	<queryString><![CDATA[select
+    m2.BEN_TYPE_DESC,
+    m1.SCH_TYPE_ID,
+    m1.BEN_TYPE_ID,
+    m1.DISTRICT_NAME,
+    m1.Office_id,
+    m1.DISTRICT_CODE
+from
+
+(
+(
+select 
+      DISTINCT BEN_TYPE_ID,SCH_TYPE_ID, 
+        DISTRICT_NAME,Office_id,DISTRICT_CODE
+  from
+      PMS_DCB_LEDGER where OFFICE_ID=$P{OFFICE_ID} and SCH_TYPE_ID=$P{SCH_TYPE_ID}
+      order by BEN_TYPE_ID,SCH_TYPE_ID
+)
+m1
+
+  join
+(
+        select BEN_TYPE_DESC ,BEN_TYPE_ID   from PMS_DCB_BEN_TYPE   
+)m2
+on m2.BEN_TYPE_ID=m1.BEN_TYPE_ID
+
+)]]></queryString>
+
+	<field name="BEN_TYPE_DESC" class="java.lang.String"/>
+	<field name="BEN_TYPE_ID" class="java.lang.String"/>
+	<field name="DISTRICT_NAME" class="java.lang.String"/>
+	<field name="OFFICE_ID" class="java.lang.String"/>
+	<field name="DISTRICT_CODE" class="java.lang.String"/>
+	<field name="SCH_TYPE_ID" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="21"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="420"
+						y="2"
+						width="118"
+						height="15"
+						forecolor="#006666"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="279"
+						y="2"
+						width="77"
+						height="15"
+						forecolor="#006666"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Water Charges]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="163"
+						y="2"
+						width="82"
+						height="15"
+						forecolor="#006666"
+						key="staticText-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Maint. Charges]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="61"
+						y="2"
+						width="92"
+						height="15"
+						forecolor="#006666"
+						key="staticText-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Beneficiaries]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="9"
+						y="2"
+						width="34"
+						height="15"
+						forecolor="#006666"
+						key="staticText-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Sl No]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="5"
+						y="19"
+						width="584"
+						height="0"
+						key="line-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="1"
+						width="584"
+						height="0"
+						key="line-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="63"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="9"
+						y="27"
+						width="213"
+						height="16"
+						forecolor="#003333"
+						key="textField-1"
+						positionType="Float"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DISTRICT_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="109"
+						y="14"
+						width="326"
+						height="16"
+						key="textField"
+						positionType="Float"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BEN_TYPE_DESC}]]></textFieldExpression>
+				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="9"
+						y="43"
+						width="537"
+						height="20"
+						key="subreport-1"
+						positionType="Float"/>
+					<subreportParameter  name="SCH_TYPE_ID">
+						<subreportParameterExpression><![CDATA[$F{SCH_TYPE_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="ctxpath">
+						<subreportParameterExpression><![CDATA[$P{ctxpath}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="DISTRICT_CODE">
+						<subreportParameterExpression><![CDATA[$F{DISTRICT_CODE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="BEN_TYPE_ID">
+						<subreportParameterExpression><![CDATA[$F{BEN_TYPE_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="OFFICE_ID">
+						<subreportParameterExpression><![CDATA[$F{OFFICE_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath} + "div_Sub2.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

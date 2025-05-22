@@ -1,0 +1,465 @@
+/*--------------------------------- Old Styles start---------------------------*/
+.table
+{
+        background-color: rgb(247,247,247);
+}
+
+.tdH
+{
+     background-color: rgb(181,195,246);
+   
+}
+
+.disab
+{
+    background-color: rgb(231,231,231);
+}
+.tdTitle
+{
+    background-color: rgb(181,195,246);
+}
+
+.tdB
+{
+    background-color: rgb(220,223,251);
+}
+/*--------------------------------- Old Styles end---------------------------*/
+
+
+body{
+	font-family: Times new Roman, Arial, Helvetica, sans-serif, Verdana;
+	font-size: 90%;
+	background: none repeat scroll 0 0 #FFFFFF;
+}	
+
+table{
+	width: 100%;
+	background-color: rgb(247,247,247);
+}
+ 
+table, th, td{
+	border-collapse: collapse;
+	border: 1px solid black;
+}
+
+/*--------------------------------- Form filed start ---------------------------*/
+
+/*---------------- Form filed 4 column type start --------------*/
+/*-------- Table form class default 4 column type --------*/
+
+.tableForm thead th{   
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#B5C3F6', endColorstr='#1D5492'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#B5C3F6), to(#1D5492)); /* for webkit browsers Chrome*/
+	background: -moz-linear-gradient(top,  #B5C3F6,  #1D5492); /* for firefox 3.6+ #003F7F*/
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 140%;
+    font-weight: bold;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: bold;
+    padding : 4px;
+}
+
+.tableForm td:nth-child(odd){
+    width: 20%;
+	text-align: right;
+	min-width: 150px;
+	padding: 2px 6px;
+}
+.tableForm td:nth-child(even){
+	width: 30%;
+	padding: 2px 6px;
+}
+.tableForm tbody td:nth-child(odd){
+    width: 20%;
+	text-align: right;
+	min-width: 150px;
+	background-color: #F7F7F7;
+	padding: 2px 6px;
+}
+.tableForm tbody td:nth-child(even){
+	width: 30%;
+	background-color: #F7F7F7;
+	text-align: left;
+	padding: 2px 6px;
+}
+.tableForm tfoot td:nth-child(odd){
+	text-align: center;
+	background-color: #B5C3F6;
+	padding: 4px;
+}
+
+.tableForm td.lbl { 
+ 	background-color: #E5E5E5;
+    font-weight: bold;
+}
+.tableForm tbody td:nth-child(n).lbl{
+    background-color: #E5E5E5;
+    font-weight: bold;
+}
+.tableForm td:nth-child(n).lbl{
+    background-color: #E5E5E5;
+    font-weight: bold;
+}
+/*---------------- Form filed 4 column type start --------------*/
+
+/*---------------- Form filed 2 column type start --------------*/
+
+.tableForm2 thead th{
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#B5C3F6', endColorstr='#003F7F'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#B5C3F6), to(#003F7F)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #B5C3F6,  #003F7F); /* for firefox 3.6+ */
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 140%;
+    font-weight: bold;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: bold;
+    padding : 4px;
+}
+.tableForm2 tbody td:nth-child(odd){
+    width: 30%;
+	text-align: right;
+	min-width: 150px;
+	background-color: #F7F7F7;
+	padding: 2px 6px;
+}
+
+.tableForm2 tbody tr .desc{
+	background-color: red;
+}
+
+.tableForm2 tbody td:nth-child(even){
+	width: 70%;
+	background-color: #F7F7F7;
+	text-align: left;
+	padding: 2px 6px;
+}
+
+.tableForm2 tfoot td:nth-child(odd){
+	text-align: center;
+	background-color: #B5C3F6;
+	padding: 4px;
+}
+
+.tableForm2 td.lbl { 
+ 	background-color: #E5E5E5;
+    font-weight: bold;
+}
+.tableForm2 tbody td:nth-child(n).lbl{
+    background-color: #E5E5E5;
+    font-weight: bold;
+}
+.tableForm2 td:nth-child(n).lbl{
+    background-color: #E5E5E5;
+    font-weight: bold;
+}
+/*--------------------------------- Form filed end ---------------------------*/
+
+/*---------------------------- Existing details Start ------------------------*/
+.existRecTbl{
+	width: 100%;	
+	border-bottom-style: none;
+    border-bottom-width: medium;
+    border-right-style: none;
+    border-right-width: medium;
+    border-top-style: hidden;
+    border-top-width: thin;
+}
+.existRecTbl thead th:nth-child(1){
+	width: 50%;
+	text-align: left;
+	background-color: #B5C3F6;
+	padding: 3px 3px 3px 15px;
+}
+.existRecTbl thead th:nth-child(2){
+	width: 50%;
+	text-align: right;
+	background-color: #B5C3F6;
+	padding: 3px 15px 3px 3px;
+}
+.existRecTbl td:nth-child(1){
+	width: 50%;
+	text-align: left;
+	background-color: #B5C3F6;
+	font-weight: bold;
+	padding: 3px 3px 3px 15px;
+}
+.existRecTbl td:nth-child(2){
+	width: 50%;
+	text-align: right;
+	background-color: #B5C3F6;
+	font-weight: bold;
+	padding: 3px 15px 3px 3px;
+}
+
+/*---------------------------- Existing details end ------------------------*/
+
+/*------------------------------- Grid Start -------------------------------*/
+
+.grid{
+	width: 100%;
+	border-bottom-style: none;
+    border-bottom-width: medium;
+    border-right-style: none;
+    border-right-width: medium;
+    border-top-style: hidden;/*Top border is hide*/
+    border-top-width: thin;
+}
+/*grid class th with table header tag*/
+.grid thead th{
+	background-color: #B5C3F6;
+	text-align: center;
+	padding: 3px 5px;
+	text-transform: capitalize;	
+}
+
+.grid thead td{
+	background-color: #B5C3F6;
+	text-align: center;
+	padding: 3px 5px;
+	text-transform: capitalize;
+	font-weight: bold;
+}
+
+/*grid class th with table header tag. 
+		First child is select/Edit column*/
+.grid thead th:nth-child(1){
+	text-align: center;
+}
+
+/*grid class td with table header tag
+		First child is select/Edit column*/
+.grid thead td:nth-child(1){
+	text-align: center;
+}
+
+/*grid class th without table header tag
+		First child is select/Edit column*/
+.grid th:nth-child(1){
+	text-align: center;
+}
+
+.grid td:nth-child(1){
+	text-align: center;
+}
+/*grid class td with table body tag*/
+.grid tbody td{
+	/*background-color: #F7F7F7;*/
+	text-align: left;
+	padding: 2px 6px;
+}
+
+.grid tbody tr:nth-child(even) {
+	background: #EFF2FC;
+}
+.grid tbody tr:nth-child(odd) {
+	background: #F9FAFC;
+}
+
+.grid tfoot td{
+	background-color: #D4DCF9;
+	padding: 2px 6px;
+}	
+/*-------------------------------- Grid End --------------------------------*/
+
+/*-------------------------- Pagination details start ----------------------*/
+.paginationTbl{
+	width: 100%;
+	border: 1px solid black;
+	
+	border-bottom-style: none;
+    border-bottom-width: medium;
+    border-right-style: none;
+    border-right-width: medium;
+    border-top-style: hidden;/*Top border is hide*/
+    border-top-width: thin;
+}
+/*with table footer*/
+.paginationTbl tfoot td{
+	height: 22px;
+	background-color: #B5C3F6;
+	text-align: center;
+}
+.paginationTbl tfoot td:nth-child(1){
+	width: 20%;
+	text-align: center;
+	padding: 3px;
+}
+.paginationTbl tfoot td:nth-child(2){
+	width: 60%;
+	text-align: center;
+	padding: 3px;
+}
+.paginationTbl tfoot td:nth-child(3){
+	width: 20%;
+	text-align: center;
+	padding: 3px;
+}
+/*with out table footer*/
+.paginationTbl td{
+	height: 22px;
+	background-color: #B5C3F6;
+	text-align: center;
+}
+.paginationTbl td:nth-child(1){
+	width: 20%;
+	text-align: center;
+}
+.paginationTbl td:nth-child(2){
+	width: 60%;
+	text-align: center;
+}
+.paginationTbl td:nth-child(3){
+	width: 20%;
+	text-align: center;
+}
+
+/*select box no. of records show in grid*/
+#pageSize{
+	min-width: 50px;
+	width: 50px;
+}
+.pageSize{
+	min-width: 50px;
+	width: 50px;
+}
+
+/*select box page no list */
+#pageNoList{
+	min-width: 50px;
+	width: 50px;
+}
+.pageNoList{
+	min-width: 50px;
+	width: 50px;
+}
+
+/*-------------------------- Pagination details end ----------------------*/
+
+/*-------------------------- Search Form start----------------------*/
+.submitTbl{
+	width: 100%;
+	border: 1px solid black;
+	
+	border-bottom-style: none;
+    border-bottom-width: medium;
+    border-right-style: none;
+    border-right-width: medium;
+    border-top-style: hidden;/*Top border is hide*/
+    border-top-width: thin;
+}
+/*with table footer*/
+.submitTbl tfoot td{
+	height: 22px;
+	background-color: #B5C3F6;
+	text-align: center;
+}
+
+.submitTbl td{
+	height: 22px;
+	background-color: #B5C3F6;
+	text-align: center;
+}
+
+/*-------------------------- Search Form end----------------------*/
+
+/*------------------------ Input forms design start ----------------------*/
+input[type="text"]{
+	font-family: inherit; 
+	font-size: inherit;
+	border: 1px solid #999999;
+	padding: 2px;
+	background-color: white;
+}
+
+input[type="button"], input[type="submit"]{
+	font-family: inherit; 
+	font-size: 80%;
+	text-transform: uppercase;
+}
+
+input[type="text"]:focus, textarea:focus, select:focus{
+	border: 1px solid #FFBA14;
+/*@include box-shadow(0 0 5px rgba(81, 203, 238, 1));
+  padding: 3px 0px 3px 3px;
+  margin: 5px 1px 3px 0px;
+  border: 1px solid rgba(81, 203, 238, 1);*/
+}
+
+select{
+	font-family: arial; 
+	font-size: 2ex;
+	border: 1px solid #999999;
+	max-width: 400px;
+	min-width: 140px;
+	width: 80%;
+	padding: 2px; 	
+}
+textarea{
+	font-family: inherit; 
+	font-size: inherit;
+	width: 90%;
+	height: 35px;
+	border: 1px solid #999999;
+	padding: 2px;
+	resize:none;
+	min-width: 50px;
+	max-width: 400px;
+	background-color: white;
+}
+
+/*Specified filed's width to increase by 90%*/
+.inputWidth{
+	max-width: 350px;
+	min-width: 140px;
+	width: 90%;
+}
+
+.selectFinYear{
+	width : 200px;	
+}
+/*-------------------------- Input forms design end --------------------------*/
+
+/*------------------------- Common property Start----------------------------*/
+
+/* Text to show bold */
+.bold{
+	font-weight: bold;
+}
+
+/*Searching form field to be show blue color*/
+.searchLbl{
+	color : #0000ff;
+}
+.searchFld{
+	COLOR: #0000ff;
+}
+/**/
+.formatLbl{
+	font-size: 80%;
+}
+.dateFormatLbl{
+	font-size: 80%;
+}
+
+.amount{
+	text-align: right;	
+}
+
+.star{
+	color: #FF0000;
+}
+
+a:link {color:#0000EE;}      /* unvisited link */
+a:visited {color:#0000EE;}  /* visited link */
+a:hover {color:#0000EE;}  /* mouse over link */
+a:active {color:#0000EE;}  /* selected link */
+
+
+
+/*-------------------------- Common property end----------------------------*/
+
+

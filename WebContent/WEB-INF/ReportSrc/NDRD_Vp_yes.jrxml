@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.0.final using JasperReports Library version 6.19.0-646c68931cebf1a58bc65c4359d1f0ca223c5e94  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NDRD_Vp_yes" pageWidth="793" pageHeight="842" whenNoDataType="NoPages" columnWidth="733" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="e1a7777e-15af-4471-b008-c5dc3aafcec8">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="year" class="java.lang.String"/>
+	<parameter name="month" class="java.lang.String"/>
+	<parameter name="endofday" class="java.lang.Integer"/>
+	<parameter name="app_year" class="java.lang.String"/>
+	<parameter name="monthval" class="java.lang.String"/>
+	<parameter name="label" class="java.lang.String"/>
+	<parameter name="divby" class="java.lang.String"/>
+	<parameter name="prv_label" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="month_label" class="java.lang.String"/>
+	<parameter name="monthval_1" class="java.lang.String"/>
+	<parameter name="month1" class="java.lang.String"/>
+	<parameter name="year1" class="java.lang.String"/>
+	<parameter name="endofday1" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select 
+ DISTRICT_CODE,
+district_name,blk.block_name as BENEFICIARY_NAME ,blk.block_sno,
+ sum(dmd2) as Pre_Demand ,
+   SUM(collection2) AS Present_coll,
+ (SUM(dmd))  AS dmd,  SUM(ob) AS ob,
+SUM(arrear_collection) AS arrear_collection,SUM(bal)  AS bal,SUM(cb)   AS cb,SUM(OB_MAINT_CHARGES)  AS OB_MAINT_CHARGES,SUM(ob_int) AS ob_int,
+SUM(COLN_INT_WC)     AS COLN_INT_WC,SUM(ob)+(SUM(dmd)-SUM(dmd2))-( SUM(collection) - sum(collection2)   ) AS Pre_net_balance
+
+from 
+
+(
+
+SELECT 
+  ben.BENEFICIARY_TYPE_ID,ben.Block_sno, 
+  btype.BEN_TYPE_DESC,coll2.collection2,
+ district_name,DISTRICT_CODE,
+  ben.BENEFICIARY_NAME,
+  coll.OFFICE_ID ,
+  decode(dmd,null,0,dmd) as dmd,
+  decode(dmd2,null,0,dmd2) as dmd2,
+  ob,  
+    collection,
+   case when  collection > dmd   then
+    (collection-dmd) 
+    else
+    0
+    end as arrear_collection,
+     case when collection > dmd then
+     0 
+     else 
+        (dmd-collection) end  AS bal,
+  (ob +(dmd-collection)) AS cb,OB_MAINT_CHARGES,ob_int,COLN_INT_WC
+ 
+FROM (
+  (SELECT OFFICE_ID,
+    BENEFICIARY_SNO,
+    (SUM(OB_CUR_YR_WC)+sum(OB_MAINT_CHARGES)+SUM(OB_YESTER_YR_WC))/ $P{divby} AS ob,sum(OB_MAINT_CHARGES)/ $P{divby} as OB_MAINT_CHARGES 
+  FROM PMS_DCB_OB_YEARLY
+  WHERE  MONTH=4   AND FIn_YEAR   =$P{app_year}  GROUP BY OFFICE_ID,
+    BENEFICIARY_SNO
+  )ob
+LEFT OUTER JOIN
+  (SELECT BENEFICIARY_SNO ,
+    OFFICE_ID,
+     ((SUM(COLN_CUR_YR_WC) +sum(COLN_MAINT) + SUM(COLN_YESTER_YR_WC) +SUM(MINUS_CHARGES_WC) + SUM(MINUS_CHARGES_MAINT)  ) - (SUM(ADD_CHARGES_WC) + SUM(ADD_CHARGES_MAINT) ) )/ $P{divby} AS collection,  -- add maintanence Journal
+    sum(CB_INT_AMT_WC) / $P{divby} as ob_int,sum(COLN_INT_WC) / $P{divby} as COLN_INT_WC
+  FROM PMS_DCB_TRN_BILL_DMD  
+  WHERE   (to_date((01||'-'||BILL_MONTH||'-'||BILL_YEAR),'dd-MM-yyyy') >=to_date('1-4-'||$P{app_year},'dd-mm-yyyy'))
+  AND (to_date((01||'-'||BILL_MONTH||'-'||BILL_YEAR),'dd-MM-yyyy') <=to_date($P{endofday}||'-'||$P{month}||'-'||$P{year},'dd-mm-yyyy'))  
+  and BENEFICIARY_SNO in (SELECT     BENEFICIARY_SNO FROM PMS_DCB_MST_BENEFICIARY  )
+  GROUP BY OFFICE_ID,
+    BENEFICIARY_SNO
+  )coll
+ON coll.OFFICE_ID       =ob.OFFICE_ID
+AND coll.BENEFICIARY_SNO=ob.BENEFICIARY_SNO
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID,
+    BENEFICIARY_SNO,
+    SUM(MONTH_BILL_AMT) / $P{divby} AS dmd
+  FROM PMS_DCB_TRN_BILL_DMD
+  WHERE   (to_date((01||'-'||BILL_MONTH||'-'||BILL_YEAR),'dd-MM-yyyy') >=to_date('1-4-'||$P{app_year},'dd-mm-yyyy'))
+   AND (to_date((01||'-'||BILL_MONTH||'-'||BILL_YEAR),'dd-MM-yyyy') <=to_date($P{endofday1}||'-'||$P{month1}||'-'||$P{year1},'dd-mm-yyyy')) -- change the date to previouse month
+  GROUP BY OFFICE_ID,
+    BENEFICIARY_SNO
+  )dmd
+ON coll.OFFICE_ID       =dmd.OFFICE_ID
+AND coll.BENEFICIARY_SNO=dmd.BENEFICIARY_SNO
+AND dmd.OFFICE_ID       =ob.OFFICE_ID
+AND dmd.BENEFICIARY_SNO =ob.BENEFICIARY_SNO
+
+LEFT OUTER JOIN  (SELECT OFFICE_ID, BENEFICIARY_SNO, SUM(MONTH_BILL_AMT) / $P{divby} AS dmd2  FROM PMS_DCB_TRN_BILL_DMD
+  WHERE BILL_MONTH=$P{month1} and BILL_YEAR=$P{year1}    
+  GROUP BY OFFICE_ID, BENEFICIARY_SNO  )dmd2
+ON coll.OFFICE_ID =dmd2.OFFICE_ID
+AND coll.BENEFICIARY_SNO=dmd2.BENEFICIARY_SNO
+AND dmd2.OFFICE_ID =ob.OFFICE_ID
+AND dmd2.BENEFICIARY_SNO =ob.BENEFICIARY_SNO
+
+
+LEFT OUTER JOIN  (SELECT OFFICE_ID, BENEFICIARY_SNO,
+((SUM(COLN_CUR_YR_WC) +sum(COLN_MAINT) + SUM(COLN_YESTER_YR_WC) +SUM(MINUS_CHARGES_WC) + SUM(MINUS_CHARGES_MAINT)  ) - (SUM(ADD_CHARGES_WC) + SUM(ADD_CHARGES_MAINT) ) )/ $P{divby} AS collection2 -- add collection for present month
+
+FROM PMS_DCB_TRN_BILL_DMD
+  WHERE BILL_MONTH=$P{month} and BILL_YEAR=$P{year}     
+  GROUP BY OFFICE_ID, BENEFICIARY_SNO  )coll2
+ON coll.OFFICE_ID =coll2.OFFICE_ID
+AND coll.BENEFICIARY_SNO=coll2.BENEFICIARY_SNO
+AND coll2.OFFICE_ID =ob.OFFICE_ID
+AND coll2.BENEFICIARY_SNO =ob.BENEFICIARY_SNO
+
+
+
+LEFT OUTER JOIN
+  (SELECT DISTRICT_CODE ,
+    BENEFICIARY_NAME,
+    BENEFICIARY_SNO,
+    BENEFICIARY_TYPE_ID,Block_sno
+  FROM PMS_DCB_MST_BENEFICIARY 
+  WHERE  BENEFICIARY_TYPE_ID_SUB=6
+  )ben
+ON ben.BENEFICIARY_SNO =dmd.BENEFICIARY_SNO
+AND ben.BENEFICIARY_SNO=coll.BENEFICIARY_SNO
+AND ben.BENEFICIARY_SNO=ob.BENEFICIARY_SNO
+LEFT OUTER JOIN
+  ( SELECT district_code,district_name FROM com_mst_districts
+  )dis
+ON dis.district_code=ben.district_code
+LEFT OUTER JOIN
+  ( SELECT BEN_TYPE_ID,BEN_TYPE_DESC FROM PMS_DCB_BEN_TYPE
+  )btype
+ON btype.BEN_TYPE_ID=ben.BENEFICIARY_TYPE_ID )
+where BENEFICIARY_SNO is not null
+ORDER BY BENEFICIARY_TYPE_ID,
+  district_name,
+  BENEFICIARY_SNO
+  )mainr
+  LEFT OUTER JOIN
+    (
+    SELECT block_name,block_sno from com_mst_blocks 
+    )blk
+    on blk.block_sno=mainr.block_sno
+GROUP BY DISTRICT_CODE,
+  district_name,mainr.Block_sno,blk.block_name,blk.block_sno
+Order by DISTRICT_CODE,block_name]]>
+	</queryString>
+	<field name="DISTRICT_CODE" class="java.math.BigDecimal"/>
+	<field name="DISTRICT_NAME" class="java.lang.String"/>
+	<field name="BENEFICIARY_NAME" class="java.lang.String"/>
+	<field name="BLOCK_SNO" class="java.math.BigDecimal"/>
+	<field name="PRE_DEMAND" class="java.math.BigDecimal"/>
+	<field name="PRESENT_COLL" class="java.math.BigDecimal"/>
+	<field name="DMD" class="java.math.BigDecimal"/>
+	<field name="OB" class="java.math.BigDecimal"/>
+	<field name="ARREAR_COLLECTION" class="java.math.BigDecimal"/>
+	<field name="BAL" class="java.math.BigDecimal"/>
+	<field name="CB" class="java.math.BigDecimal"/>
+	<field name="OB_MAINT_CHARGES" class="java.math.BigDecimal"/>
+	<field name="OB_INT" class="java.math.BigDecimal"/>
+	<field name="COLN_INT_WC" class="java.math.BigDecimal"/>
+	<field name="PRE_NET_BALANCE" class="java.math.BigDecimal"/>
+	<variable name="sum1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_NET_BALANCE}]]></variableExpression>
+	</variable>
+	<variable name="sum2" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_DEMAND}]]></variableExpression>
+	</variable>
+	<variable name="sum3" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_NET_BALANCE}.add$F{PRE_DEMAND}]]></variableExpression>
+	</variable>
+	<variable name="sum4" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRESENT_COLL}]]></variableExpression>
+	</variable>
+	<variable name="sum5" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_NET_BALANCE}.add$F{PRE_DEMAND}.subtract$F{PRESENT_COLL}]]></variableExpression>
+	</variable>
+	<variable name="sum22" class="java.math.BigDecimal" resetType="Group" resetGroup="dis" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_DEMAND}]]></variableExpression>
+	</variable>
+	<variable name="sum12" class="java.math.BigDecimal" resetType="Group" resetGroup="dis" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_NET_BALANCE}]]></variableExpression>
+	</variable>
+	<variable name="sum32" class="java.math.BigDecimal" resetType="Group" resetGroup="dis" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_NET_BALANCE}.add$F{PRE_DEMAND}]]></variableExpression>
+	</variable>
+	<variable name="sum42" class="java.math.BigDecimal" resetType="Group" resetGroup="dis" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRESENT_COLL}]]></variableExpression>
+	</variable>
+	<variable name="sum52" class="java.math.BigDecimal" resetType="Group" resetGroup="dis" calculation="Sum">
+		<variableExpression><![CDATA[$F{PRE_NET_BALANCE}.add$F{PRE_DEMAND}.subtract$F{PRESENT_COLL}]]></variableExpression>
+	</variable>
+	<group name="dis">
+		<groupExpression><![CDATA[$F{DISTRICT_CODE}]]></groupExpression>
+		<groupHeader>
+			<band height="18" splitType="Stretch">
+				<textField isBlankWhenNull="false">
+					<reportElement key="textField-33" x="1" y="0" width="731" height="18" uuid="433901e7-2c80-43e8-98bf-be7b79dee81b"/>
+					<box leftPadding="5">
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{DISTRICT_NAME}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20" splitType="Stretch">
+				<staticText>
+					<reportElement key="staticText-18" x="1" y="0" width="202" height="20" uuid="fe8c0d4b-7a38-462e-89e1-e7274993d7fa"/>
+					<box rightPadding="14">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<text><![CDATA[ Total]]></text>
+				</staticText>
+				<textField pattern="##0.00" isBlankWhenNull="false">
+					<reportElement key="textField-34" x="203" y="0" width="90" height="20" uuid="fbfd8e7b-d4b5-4c5e-b723-aa565248d590"/>
+					<box rightPadding="5">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{sum12}]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.00" isBlankWhenNull="false">
+					<reportElement key="textField-35" x="293" y="0" width="110" height="20" uuid="a8aeb397-6658-4fbc-be2c-00875c9211b7"/>
+					<box rightPadding="5">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{sum22}]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.00" isBlankWhenNull="false">
+					<reportElement key="textField-36" x="403" y="0" width="107" height="20" uuid="22ba3786-5032-4d14-84cb-312bbc2f95b8"/>
+					<box rightPadding="10">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{sum32}]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.00" isBlankWhenNull="false">
+					<reportElement key="textField-37" x="626" y="0" width="106" height="20" uuid="55c3d074-6b07-4dc4-a87a-0932e594b575"/>
+					<box rightPadding="5">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{sum52}]]></textFieldExpression>
+				</textField>
+				<textField pattern="##0.00" isBlankWhenNull="false">
+					<reportElement key="textField-38" x="510" y="0" width="116" height="20" uuid="7ea2a2ab-2783-4cb2-be9e-d3f75ebdc2c4"/>
+					<box rightPadding="5">
+						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$V{sum42}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="110" splitType="Stretch">
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-15" x="646" y="24" width="87" height="20" uuid="3ca100ab-fa2a-4966-82bf-bfa7e123a053"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{label}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-17" x="488" y="24" width="32" height="20" uuid="25d1c074-cbd4-4897-b8e6-4f008ccf114c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-31" x="520" y="24" width="126" height="20" uuid="8af52d2a-4218-4933-8709-4ce2faad5ea0"/>
+				<box leftPadding="5"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-39" x="0" y="0" width="733" height="24" uuid="6de73159-74e1-4622-ac9a-5ca2759cebe7"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Details of water charges pending as on  "+$P{endofday}+"/"+$P{month}+"/"+$P{year} + " in respect of Village Panchayat"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-1" x="46" y="44" width="157" height="66" uuid="396933fd-c830-4e1d-8862-10de01215f60"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[BLOCK NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-7" x="1" y="44" width="45" height="66" uuid="754431f0-079e-455d-bd14-592d58868729"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Sl.No
+]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-11" x="203" y="44" width="90" height="66" uuid="df69b16b-eade-4add-905d-888364537a0c"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Due as on 1/"+$P{month1}+"/"+$P{year1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-18" x="510" y="44" width="116" height="66" uuid="76300d6e-3ca1-49ae-94af-0c643d310a01"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Collection during "+$P{month}+"/"+$P{year}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-19" x="626" y="44" width="106" height="66" uuid="54ff9294-e762-4531-8643-5dcc3d3e24a8"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cumulative due as on "+$P{endofday}+"/"+$P{month}+"/"+$P{year}+" *"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-16" x="403" y="44" width="107" height="66" uuid="54102af9-90f5-4de1-a4d4-557ee03f339c"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-32" x="293" y="44" width="110" height="66" uuid="5d9d4548-4f5e-4ee7-8cf4-0baae4d0f456"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Demand for "+$P{month1}+"/"+$P{year1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Prevent"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+				<reportElement key="textField-1" x="46" y="0" width="157" height="18" uuid="620240c5-33f9-4553-9c2f-977e8cd9451f"/>
+				<box leftPadding="5">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{BENEFICIARY_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-4" x="203" y="0" width="90" height="18" uuid="ce2e1201-d72d-4126-a81d-4213e9a3fdcd"/>
+				<box rightPadding="5">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRE_NET_BALANCE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="1" y="0" width="45" height="18" uuid="1f1fccc6-804a-4d9f-9e1b-aa3f7124d63b"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-20" x="293" y="0" width="110" height="18" uuid="bf127248-733a-40b6-ab52-7bab918f9630"/>
+				<box rightPadding="5">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRE_DEMAND}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-21" x="403" y="0" width="107" height="18" uuid="ee7c3895-7335-489c-905a-1b9354e0be26"/>
+				<box rightPadding="10">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRE_NET_BALANCE}.add$F{PRE_DEMAND}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-25" x="510" y="0" width="116" height="18" uuid="61a433e5-9093-42c3-97ed-f59cba69fa7b"/>
+				<box rightPadding="5">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRESENT_COLL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="true">
+				<reportElement key="textField-27" x="626" y="0" width="106" height="18" uuid="a78dd8f5-6230-4018-a039-aa8e628832ea"/>
+				<box rightPadding="5">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRE_NET_BALANCE}.add$F{PRE_DEMAND}.subtract$F{PRESENT_COLL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="77" splitType="Stretch">
+			<staticText>
+				<reportElement key="staticText-8" x="1" y="0" width="202" height="20" uuid="2942ae7b-010b-4f58-99ec-fa0a5a8e5180"/>
+				<box rightPadding="14">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Net Total]]></text>
+			</staticText>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-6" x="203" y="0" width="90" height="20" uuid="c38a56e4-ffb0-4be7-aea5-6f037e739442"/>
+				<box rightPadding="5">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{sum1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-22" x="293" y="0" width="110" height="20" uuid="d4ddb286-10f8-4cfe-b311-1f05934f4940"/>
+				<box rightPadding="5">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{sum2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-23" x="403" y="0" width="107" height="20" uuid="2a92d739-e82e-4be0-b009-590e5deb6cc3"/>
+				<box rightPadding="10">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{sum3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-24" x="626" y="0" width="106" height="20" uuid="b0b806ef-9fa0-4ba3-a9ac-030c6a810ebb"/>
+				<box rightPadding="5">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{sum5}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00" isBlankWhenNull="false">
+				<reportElement key="textField-26" x="510" y="0" width="116" height="20" uuid="397351a8-68b5-44fe-93ae-beebb963c4b5"/>
+				<box rightPadding="5">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{sum4}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-14" x="-1" y="20" width="733" height="19" uuid="e7143dfa-ded6-4172-afb0-50d3708691ad"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Opening Balance includes Maintenance charges]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-15" x="-1" y="39" width="732" height="18" uuid="204abaae-4752-402f-8438-c32dae1398b9"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Collection includes current and yester year water charges]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-28" x="-1" y="57" width="732" height="20" uuid="9c7cdb1f-20a6-4e4f-9c82-2d4d35400c53"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression><![CDATA["* Cumulative due does not include "+ $P{month_label} +" demand "]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

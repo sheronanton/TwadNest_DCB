@@ -1,0 +1,861 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title> Background Image Style - CSS (HTML) Tutorial</title>
+<META NAME="Keywords" Content="Set Background image style, CSS tutorial">
+<META NAME="Description" Content="CSS tutorial to set the background image style in HTML. This is a free online tutorial.">
+<link rel="stylesheet" type="text/css" href="../../style.css" />
+<!--script type="text/javascript">
+_uacct = "UA-582001-1";
+urchinTracker();
+</script-->
+<LINK rel="alternate" type="application/rss+xml" title="Images" href="http://hscripts.com/rss/rss.xml">
+<LINK rel="alternate" type="application/rss+xml" title="Scripts" href="http://hscripts.com/rss/rss-scripts.xml">
+<LINK rel="alternate" type="application/rss+xml" title="Tutorials" href="http://hscripts.com/rss/rss-tutorial.xml">
+</head>
+<body>
+<table cellpadding=0 cellspacing=0 class="firsttab" style="width:100%;height:100%;">
+<!-- The First Row -->
+<tr style="width:100%;height:100%;">
+<td style="width:100%;">
+
+<!-- Header Table -->
+<table align=center cellpadding=0 cellspacing=0 style="width: 100%;">
+<tr><td>
+<!--submenu  -->
+
+<script type="text/javascript">
+var color1 = "#ffffee";
+var color2 = "#edf8d7";
+var mouseocolor = "#FFFFFF";
+var sitename = "hscripts.com";
+
+window.onerror = null;
+var bName = navigator.appName;
+var bVer = parseInt(navigator.appVersion);
+var IE4 = (bName == "Microsoft Internet Explorer" && bVer >= 4);
+var menuActive = 0;
+var menuOn = 0;
+var onLayer;
+var timeOn = null;
+var colnow = color1;
+
+var url = encodeURIComponent(window.location);
+var title = encodeURIComponent(document.title);
+var sitename = "hscripts.com";
+
+//set the bookmark link, where you want(topright,topleft,bottomright,bottomleft)  
+var corner = "bottomright";
+
+function bookmark(title,url){
+	if(window.sidebar) 
+          window.sidebar.addPanel(title,url,"");
+	else if(window.opera && window.print){
+          var elem = document.createElement('a');
+          elem.setAttribute('href',url);
+          elem.setAttribute('title',title);
+          elem.setAttribute('rel','sidebar');
+          elem.click();
+	}
+	else if(os == "ie")
+          window.external.AddFavorite(url,title);
+}
+
+
+
+var os;
+if(document.layers)
+ os = "n4";
+else if(document.getElementById&&!document.all)
+ os = "n6";
+else if(document.all)
+ os = "ie";
+
+//Function to scroll the bookmark images throughout the page
+
+function showLayer(layerName,aa){
+	var x =document.getElementById(aa);
+	//alert(x);
+	var tt =findPosX(x);
+	var ww =findPosY(x)+30;
+	
+	//alert(tt+"---"+ww);
+
+	if (timeOn != null) {
+	clearTimeout(timeOn);
+	hideLayer(onLayer);
+	}
+	if (IE4) {
+	var layers = eval('document.all["'+layerName+'"].style');
+	layers.left = tt;
+	layers.top = ww;
+	eval('document.all["'+layerName+'"].style.visibility="visible"');
+	}
+	else {
+		if(document.getElementById){
+		var elementRef = document.getElementById(layerName);
+		if((elementRef.style)&& (elementRef.style.visibility!=null)){
+		elementRef.style.visibility = 'visible';
+		elementRef.style.left = tt;
+		elementRef.style.top = ww;
+		}
+		}
+	}
+	onLayer = layerName
+}
+
+function hideLayer(layerName){
+	if (menuActive == 0)
+	{
+		if (IE4){
+		eval('document.all["'+layerName+'"].style.visibility="hidden"');
+		}
+		else{
+			if(document.getElementById){
+				var elementRef = document.getElementById(layerName);
+				if((elementRef.style)&& (elementRef.style.visibility!=null)){
+					elementRef.style.visibility = 'hidden';
+				}
+			}
+		}
+	}
+}
+
+function btnTimer() {
+	timeOn = setTimeout("btnOut()",600)
+}
+
+function btnOut(layerName){
+	if (menuActive == 0){
+	hideLayer(onLayer)
+	}
+}
+
+var item;
+function menuOver(itemName){
+	item=itemName;
+	itemName.style.backgroundColor = mouseocolor; //background color change on mouse over
+	clearTimeout(timeOn);
+	menuActive = 1
+}
+
+function menuOut(itemName,iid){
+	if(iid == 1)
+		colnow = color1;
+	else
+		colnow = color2;
+
+	if(item)
+		itemName.style.backgroundColor = colnow;
+	menuActive = 0
+	timeOn = setTimeout("hideLayer(onLayer)", 100)
+}
+
+function findPosX(obj)
+{
+var curleft = 0;
+if (obj.offsetParent)
+{
+while (obj.offsetParent)
+{
+curleft += obj.offsetLeft
+obj = obj.offsetParent;
+}
+}
+else if (obj.x)
+curleft += obj.x;
+return curleft;
+}
+
+function findPosY(obj)
+{
+var curtop = 0;
+if (obj.offsetParent)
+{
+while (obj.offsetParent)
+{
+curtop += obj.offsetTop
+obj = obj.offsetParent;
+}
+}
+else if (obj.y)
+curtop += obj.y;
+return curtop;
+}
+</script>
+
+
+
+<div id=Menu251 style="position:absolute; border:1px solid #000000; visibility:hidden; z-index: 1">
+<table cellspacing=0 cellpadding=0 style="border-collapse: collapse;">
+
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/php/index.php"> PHP Script </a>
+</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/JavaScript/index.php"> Java Script </a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/jquery/index.php"> Jquery Script </a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/ajax/index.php"> AJAX Script </a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/jsp/index.php"> JSP Script </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/perl/index.php"> Perl Script </a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/scripts/shell-scripts/index.php"> Shell Script </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.asp.hscripts.com/"> ASP Script </a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://hscripts.com/scripts/licensed/index.php"> Licensed Scripts </a> &nbsp;&nbsp;</td></tr>
+</table></div>
+
+<div id=Menu252 style="position:absolute; border:1px solid #000000; visibility:hidden; z-index: 1">
+<table cellspacing=0 cellpadding=0 style="border-collapse: collapse;">
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/scripts/licensed/index.php"> Licensed Scripts </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/premium-icons/">Premium Icons</a> &nbsp;&nbsp;</td></tr>
+</table></div>
+<div id=Menu253 style="position:absolute; border:1px solid #000000; visibility:hidden; z-index: 1">
+<table cellspacing=0 cellpadding=0 style="border-collapse: collapse;">
+<tr style="height:22px;">
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tutorials/html/index.php"> HTML Tutorials </a></td>
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/css/index.php">CSS Tutorials </a></td>
+</tr>
+<tr  style="height:22px;">
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/photoshop/index.php">Photoshop Tutorials</a></td>
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/flash/index.php">Flash Tutorials</a></td>
+</tr>
+<tr  style="height:22px;">
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tutorials/javascript/index.php">JavaScript Tutorials </a>
+</td>
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/jquery/index.php">Jquery Tutorials</a></td>
+</tr>
+<tr style="height:22px;">
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tutorials/jsp/index.php">JSP Topics</a>
+</td>
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/php/index.php">Php Tutorials </a></td>
+</tr>
+<tr style="height:22px;">
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/mysql/index.php">MYSQL Tutorials </a>
+</td>
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/regular-expression/index.php">Regular Expression</a></td>
+</tr>
+
+<tr  style="height:22px;">
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/perl/index.php">Perl Tutorial </a> &nbsp;&nbsp;</td>
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/web/domain-names.php">Domain & Dns </a></td>
+</tr>
+<tr  style="height:22px;">
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tutorials/linux-commands/index.php">Unix Commands</a> &nbsp;&nbsp;</td>
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/cpp/index.php">C++</a></td>
+</tr>
+<tr style="height:22px;">
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tutorials/vista-services/index.php">Vista Services</a> &nbsp;&nbsp;</td>
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/linux-services/index.php">Linux Services</a></td>
+</tr>
+<tr style="height:22px;">
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/webbuilding/index.php">Web Building</a> &nbsp;&nbsp;</td>
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/SEO/index.php">Seo Tutorial</a></td>
+</tr>
+<tr style="height:22px;">
+<td class=row2 onmouseout="menuOut(this,2)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/powerpoint/index.php">Powerpoint</a> &nbsp;&nbsp;</td>
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/vbnet/index.php">VB.Net Tutorial</a></td>
+</tr>
+<tr style="height:22px;">
+<td class=row1 onmouseout="menuOut(this,1)" onmouseover="menuOver(this)" align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tutorials/rss-feed/index.php">Rss Feed</a></td>
+<td class=row2 >&nbsp;&nbsp; </td>
+</tr>
+</table></div>
+
+<div id=Menu254 style="position:absolute; border:1px solid #000000; visibility:hidden; z-index: 1">
+<table cellspacing=0 cellpadding=0 style="border-collapse: collapse;">
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/freeimages/icons/"> Clipart Pictures</a>
+</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/freeimages/icons/traffic/regulatory-signs/index.php"> Signs </a>
+</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/freeimages/maps/map-icons.php"> Country Maps</a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/freeimages/icons/national-emblem/index.php"> Country Emblems</a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/freeimages/background/">Background Images </a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/freeimages/icons/menu-buttons/index.php"> Menu buttons </a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/freeimages/logos/"> Logos</a>
+</td></tr>
+
+</table></div>
+
+
+<div id=Menu255 style="position:absolute; border:1px solid #000000; visibility:hidden; z-index: 1">
+<table cellspacing=0 cellpadding=0 style="border-collapse: collapse;">
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tools/drop-down-menu/index.php"> Menu Builder  </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/ButtonCreator/index.php"> Button Creator</a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/BrokenLinkChecker/index.php"> Link Analyzer </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tools/HDNT/index.php"> DNS Lookup </a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/HLPC/index.php">Website Popularity </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tools/web-page-color/index.php"> Color Chooser </a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://www.hscripts.com/tools/HVLT/index.php">Apache Ver Lookup</a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/HPR/index.php"> Page Rank Checker  </a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class= asd href="http://hscripts.com/tools/case-conversion/index.php"> Case Converter </a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/form-generator/index.php"> Form Generator</a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/statistics/index.php">Statistics </a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/unix-timestamp/index.php">Epoch-GMT Converter</a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/hours-calculator/index.php">Hours Calculator</a> &nbsp;&nbsp;</td></tr
+>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/htpasswd/index.php">Htpasswd Generator </a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/favicon-generator/index.php">Favicon Generator</a> &nbsp;&nbsp;</td></tr>
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/backlink-checker/index.php">Backlink Checker</a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/crop-tool/index.php">Image Crop Tool</a> &nbsp;&nbsp;</td></tr>
+
+<tr class=row1 style="height:22px;" onmouseout="menuOut(this,1)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/chartool/index.php">Chart and Graph Tools</a> &nbsp;&nbsp;</td></tr>
+<tr class=row2 style="height:22px;" onmouseout="menuOut(this,2)" onmouseover="menuOver(this)">
+<td align=left>
+&nbsp;&nbsp; <a class=asd href="http://www.hscripts.com/tools/dropdown-menu/index.php">Multiple Drop Down Menu
+</a> &nbsp;&nbsp;</td></tr>
+
+</table></div>
+<script type='text/javascript' src='http://hscripts.com/select-code.js'></script>
+<table width="100%" height="153" border="0" cellspacing="0" cellpadding="0" class="head_table1">
+<tr>
+<td width="20%">
+<br>
+<b><span class='head-tit'>CSS Tutorial</span></b>
+<!--  Subdomains Link   !-->
+<br><br><br><br><br><br>
+ <span style="width: 60%; padding-left: 10px;">
+							<a href="http://es.hscripts.com">
+								<img src="http://hscripts.com/images/spain-flag.gif" border=0 alt="Español" title="
+Español"></a>
+         <a href="http://fr.hscripts.com"><img src="http://hscripts.com/images/france-flag.gif" border=0 alt="Français" title="Français"></a>
+         <a href="http://cn.hscripts.com"><img src="http://hscripts.com/images/chinese-flag.gif" border=0 alt="中文" title="
+中文"></a>
+         <a href="http://de.hscripts.com"><img src="http://hscripts.com/images/german-flag.gif" border=0 alt="Deutsch" title="Deutsch"></a>
+           <a href="http://pt.hscripts.com"><img src="http://hscripts.com/images/portuguese.gif" border=0 alt="Portuguese" title="Portuguese"></a>
+             <a href="http://ja.hscripts.com"><img src="http://hscripts.com/images/japanese-flag.gif" border=0 style='border: 1px solid #d3d3d3;' alt="Japanese" title="Japanese"></a>
+             <a href="http://www.nl.hscripts.com">
+								<img src="http://www.hscripts.com/images/dutch-flag.jpg" border=0 alt="nederlands" title="nederlands" width=12 height=12></a>
+</span>
+<!--  Subdomains Link   !-->
+</td>
+<td align="center" valign="top" colspan="2" style="background:url(../../images/girl.jpg) no-repeat;">
+<div>
+
+
+      	<div>
+        <table height="19" border="0"  style='clear:both;' cellspacing="0" cellpadding="0" align="right" bgcolor="#4d944d">
+          <tr>
+            <td><img src="../../images/new_header_04.jpg" /></td>
+            <td><div class="top_nav"><a href="http://forums.hscripts.com/" title="Forums">&nbsp; Forums &nbsp;</a></div></td>
+            <td><div class="top_nav"><a href="http://hioxindia.com/" title="Web Hosting">&nbsp;Web Hosting&nbsp;&nbsp;</a></div></td>
+            <td><div class="top_nav"><a href="http://tofocus.info/" title="Internet Stats">&nbsp;Internet Stats&nbsp;&nbsp;</a></div></td>
+            <td><div class="top_nav"><a href="http://easycalculation.com/" title="Online Calculator">&nbsp;Online Calculator&nbsp;&nbsp;</a></div></td>
+            <td><div class="top_nav"><a href="http://funmin.com/" title="Online Games">&nbsp;Online Games</a></div></td>
+            
+          </tr>
+        </table>
+        </div>
+           <div style="float:left; width:55%; height:100px; padding-top:15px;"><img src="../../images/title.png" align="right" /></div>
+            <div>
+                <table border="0" cellspacing="0" cellpadding="0" style="width:25%; height:31px; margin:0; padding:0; float:right; margin-right:10px;">
+                  <tr>
+                    <td style="background:url(../../images/new_header_10.jpg); flot:left; width:6px; height:31px;">&nbsp;</td>
+                    <td style="background:#4d944d; flot:left; height:15px;">
+                  <!-- Google Search   !-->
+                      <form  style="background:#4d944d; flot:left; height:15px;" action="http://www.hscripts.com/search.php" id="cse-search-box">
+                                 <input type="hidden" name="cx" value="partner-pub-3229609591361912:tr32dstt7u">
+                                <input type="hidden" name="cof" value="FORID:10">
+                                <input type="hidden" name="ie" value="ISO-8859-1">
+                                <input type="text" name="q" style="border:1px solid #a7cca7; height:20px; color:#ccc;" / size=17>
+                                <input type="submit" name="sa" value="Search" class="search_button" />
+                     </form>
+                  <!-- Google Search  !--> 
+                    </td>
+                    <td style="background:url(../../images/new_header_12.jpg); flot:right; width:6px; height:31px;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                  <td style="background:url(../../images/search_bottom.png) repeat-x;" colspan="3">&nbsp;</td>
+                  </tr>
+                </table>
+            </div>
+            
+            
+            <div style="clear:both;"></div>
+            <div>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+            <td width="90%">
+             <table width="90%" border="0" cellspacing="0" cellpadding="0" style='margin-left:70px;'>
+                  <tr>
+                    <td>
+                        <div class="nav_menu"><a href="../../index.php" title="Home">
+                        <img src="../../images/home_icon.png" border="0" alt="Home"/> Home</a>
+                        </div>
+                    </td>
+                    <td>
+                    	<div class="nav_menu"><a id="M251" onmouseout="btnTimer()" onmouseover="showLayer('Menu251','M251')" href="../../scripts/index.php" >
+                        <img src="../../images/script_icon.png" border="0" alt="Scripts"/> Scripts</a>
+                        </div>
+                    </td>
+                    <td>
+                    	<div class="nav_menu"><a id="M253" onmouseout="btnTimer()" onmouseover="showLayer('Menu253','M253')" href="../../tutorials/index.php" >
+                        <img src="../../images/tutorial_icon.png" border="0" alt="Tutorials"/> Tutorials</a>
+                        </div>
+                    </td>
+                    <td>
+                    	<div class="nav_menu"><a id="M254" onmouseout="btnTimer()" onmouseover="showLayer('Menu254','M254')" href="../../freeimages/index.php" >
+                        <img src="../../images/image_icon.png" border="0" alt="Images"/> Images</a>
+                        </div>
+                    </td>
+                    <td>
+                    	<div class="nav_menu"><a id="M255" onmouseout="btnTimer()" onmouseover="showLayer('Menu255','M255')" href="../../tools/index.php" >
+                        <img src="../../images/tool_icon.png" border="0" alt="Tools"/> Tools</a>
+                        </div>
+                    </td>
+                    <td>
+                    	<div class="nav_menu"><a id="M252" onmouseout="btnTimer()" onmouseover="showLayer('Menu252','M252')"  href="../../scripts/licensed/index.php" >
+                        <img src="../../images/purchase_icon.png" border="0" alt="Purchase"/> Purchase</a>
+                        </div>
+                    </td>
+                    
+                    <td>
+                    	<div class="nav_menu"><a href="../../codes-snippets/index.php" >
+                        <img src="../../images/snippet_icon.png" border="0" alt="Snippets"/> Snippets</a>
+                        </div>
+                    </td>
+                  <!--td>
+                    	<div class="nav_menu"><a href="../../tools/statstics/index.php" >
+                        <img src="../../images/script_icon.png" border="0" alt="Snippets"/> Statistics   </a>
+                        </div>
+                    </td-->
+                  </tr>
+                </table>
+                </td>
+                <td width="25%">
+                <style type="text/css">
+.imgg{cursor: pointer; padding-top: 5px; width:16px; height:16px;}
+.fav{text-decoration: none; cursor: pointer;}
+.ifrm{width:100%; height:100%; background-color:#808080; display: none; position:absolute; top: 0px; left: 0px;filter:alpha(opacity=0.5);-moz-opacity: 0.75;opacity: 0.75;background-color: #808080;}
+.div1{display: none; border:thin solid black; position: absolute; color: #b22222; background-color: black;}
+.div2{width: 350px; color: white; padding-top: 2px; padding-left: 15px; font-size: 12px;}
+.hide{margin-left: 230px; cursor: pointer; color:#ffffff;  font-size: 10px;}
+.mailfrm{color: red; background-color: white;}
+</style>
+<script type="text/javascript" src="http://apis.google.com/js/plusone.js"></script>
+<script type="text/javascript">
+var title = encodeURIComponent(document.title);
+var url = encodeURIComponent(window.location); 
+var browserName=navigator.appName;
+var left_align = 368; // Set the left position to center
+var top_align = 134;  // Set the top position to center
+
+function wopmove(id)
+{
+        var ahref = "http://zxc9.com/seo.php?type="+id+"&title="+title+"&url="+url;
+        var newWindow = window.open(ahref, '_blank');
+        newWindow.focus();
+        return false;
+}
+</script>
+
+
+<table border=0 cellspacing="0" cellpadding="0" style="width:280px; padding-left:15px;vertical-align: bottom;padding-top:5px;">
+<tr>
+<td style='float:right;'>
+  <g:plusone size="medium"></g:plusone>
+  <!//************face book share begins*************//!>
+	<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.hscripts.com/tutorials/css/backp3.php&amp;layout=button_count&amp;show_faces=true&amp;width=100&amp;action=like&amp;font=arial&amp;colorscheme=light&amp;height=5" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:50px; height:20px;">
+	</iframe>
+	<!//************face book share ends*************//!>
+  <script type='text/javascript'>
+      tweetmeme_style = 'compact';
+  </script>
+  <script type='text/javascript' src='http://www.hscripts.com/bookmark/tweet1.js'>
+	</script>
+    <img src="http://www.hscripts.com/images/stumbleupon.gif" style="cursor: pointer;" onclick="wopmove('stumbleupon')" alt="Stumbleupon Bookmark" border=0 width=16 height=16>
+        </td>
+       </tr>
+     </table>                
+                </td>
+                </tr>
+                </table>
+            </div>
+        </div>
+      
+</td></tr>
+
+<!--tr><td align=center>
+</td></tr--></table>
+<!-- Header Second Row Completed-->
+</td></tr>
+</table>
+<!-- Header Tabele Completed-->
+</td></tr>
+
+<script type="text/javascript" src="../../jquery-3.6.0.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".mainbox td:first").css("text-align", "left");
+   $(".mainbox td:first").css("width", "65%");
+  $(".mainbox").css("width", "65%");
+});
+</script>
+ <tr>
+<td style="height: 100%;">
+<!-- Second row table-->
+<table cellpadding=0 cellspacing=0 class="contenttable" style="width:100%; height:100%;">
+<!-- Second row table - row1 -->
+<tr style="height: 100%;">
+<td style="height: 100%;">
+<!-- Main contents -->
+<table style="width: 100%; height: 100%; background:#fff;" cellpadding=0 cellspacing=0 border=0>
+<tr><td style="width:20%;" valign="top">
+<table align="center" border=0 style="width: 100%; height: 100%; vertical-align:top;" class="leftbox" cellpadding=0>
+<tr><td align=left style="vertical-align:top;">
+ <script type="text/javascript">
+var ajss = "./";
+</script>
+<!-- javascripts table -->
+<script type="text/javascript" src="./expander.js">
+</script>
+<table border="0" cellspacing="0" cellpadding="0" width="214px" style="margin:0 auto;">
+<tr><td class="lefttitle">
+<b>CSS Topics</b></td></tr>
+<tr><td class="box_middle">
+<table>	
+<tr><td class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="css tutorials">
+<a class=topics1 href="index.php">Introduction</a></td></tr>
+<tr><td id=format onclick="addChilds('format')"  class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Types">
+<font class=topics1>Types</font></td></tr>
+<tr><td id=backp class=topics onclick="addChilds('backp')"><img src="../..//images/icon.gif" align="absmiddle" alt="Background Properties">
+<font class=topics1>Background Properties</font></td></tr>
+<tr><td id=textp  class=topics onclick="addChilds('textp')"><img src="../..//images/icon.gif" align="absmiddle" alt="Text Properties">
+<font class=topics1>Text Properties</font></td></tr>
+<tr><td id=fontp  class=topics onclick="addChilds('fontp')"><img src="../..//images/icon.gif" align="absmiddle" alt="Font Properties">
+<font class=topics1>Font Properties</font></td></tr>
+<tr><td class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Box Properties">
+<a class=topics1 href="boxp.php">BOX Properties</a></td></tr>
+<tr><td id=borderp onclick="addChilds('borderp')" class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Border Properties">
+<font class=topics1>Border Properties</font></td></tr>
+<tr><td id=marginp onclick="addChilds('marginp')" class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Margin Properties">
+<font class=topics1>Margin Properties</font></td></tr>
+<tr><td id=paddingp onclick="addChilds('paddingp')" class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Padding Properties">
+<font class=topics1>Padding Properties</font></td></tr>
+<tr><td id=others onclick="addChilds('others')" class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Special Topics">
+<font class=topics1>Special Topics</font></td></tr>
+<tr><td class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Forums">
+<a class=topics1 target="_blank" href="http://www.forums.hscripts.com/viewforum.php?f=4">Ask Your Doubts</a></td></tr>
+<tr><td class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Scraps">
+<a class=topics1 target="_blank" href="http://hiox.org/index.php?typea=CSS">More about CSS</a></td></tr>
+<tr><td class=topics><img src="../..//images/icon.gif" align="absmiddle" alt="Feedback">
+<a class=topics1 href="../../feedback.php?type=css-tutorial">Feedback</a></td></tr>
+</table>
+</td>
+</tr>
+<tr><td class="box_foot">&nbsp;</td></tr>
+</table>
+<br><tr><td align=center>
+<br>
+<!--div align=center style='margin: 0px; width: 150px; height: 120px;'><a href="http://hioxindia.com" target=_blank>
+<img alt="web hosting" src="../../images/hioxindia-ad.jpg" border=0></a>
+</div><br><br><br-->
+<div align=center><a href="http://www.buildmylink.com" target=_blank>
+<img alt="track, manage link submission status" src="../../images/buildmylink-ad.gif" border=0></a></div><br>
+<br>
+</td></tr>
+</td>
+<tr><td style="height: 70%; "></td></tr>
+</table>
+</td>
+
+<td style="width:60%;vertical-align:top;" class="mainbox">
+<div align=center> 
+<table style="width:100%;" cellpadding=0 cellspacing=0 align=center><tr>
+<td style="background-image:url('../..//images/center.JPG');height:40px;" align=center>
+<h3 class="scriptname">CSS Background Image</h3>
+</td></tr>
+</table>
+</div><br>
+<script type="text/javascript">
+document.onload=addChilds('backp');
+</script>
+<div align=left class="centerbox"><a href='http://www.hscripts.com/tutorials/index.php' class='nav_link1'>Tutorials</a>&nbsp;»<a href='http://www.hscripts.com/tutorials/css/index.php' class='nav_link1'>Css</a>&nbsp;»<span id='nav'></span>
+<script type='text/javascript'>
+var nav_val2=$('.scriptname').html();
+if(nav_val!=null)
+   {
+    //alert(nav_lik);
+    if(nav_lik != undefined)
+       {
+       $('#nav').html("<a href='"+nav_lik+"' class='nav_link1'>"+nav_val+"</a>&nbsp;»&nbsp;<a href='#' class='nav_link2'>"+nav_val2+"</a>");
+       }
+    else{
+      $('#nav').html("<span class='nav_link1'>"+nav_val+"</span>&nbsp;»&nbsp;<a href='#' class='nav_link2'>"+nav_val2+"</a>");
+      }
+  }
+else
+{
+$('#nav').html("<a href='#' class='nav_link2'>&nbsp;"+nav_val2+"</a>");
+}
+</script>
+<br><br><table align=center cellpadding=0 cellspacing=0 style="width:95%;">
+<tr><td class="tut-topic">
+Topic</td></tr>
+<tr><td class="tut-exp"><br>
+How to set a background image in html using css?<br><br><br>
+</td></tr>
+</table><br>
+<div align=center>
+<table cellpadding=0 cellspacing=0 width=100% align=center><tr><td align=center>
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-3229609591361912";
+/* hscripts-tut-300-250 */
+google_ad_slot = "6908476640";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</td><td align=center>
+<script type="text/javascript"><!--
+google_ad_client = "pub-3229609591361912";
+/* hscripts-tut-300-250 */
+google_ad_slot = "6908476640";
+google_ad_width = 300;
+google_ad_height = 250;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+</td>
+</tr></table>
+
+
+</div>
+<br><table align=center cellpadding=0 cellspacing=0 style="width:95%;">
+<tr><td class="tut-topic">
+<b>Explanation</b></td></tr>
+<tr><td class="tut-exp"><br>
+<b><u>Property</u></b>: <font style="color:#843222;">BackGround Image</font><br><br>
+Usage: <br>
+	<font style="color:green;"> background-image: url('image.jpg'); </font> <br>
+      <font style="color:green;"> background-image: none; </font><br><br>
+<b><u>Definition:</u></b><br>
+<div style="margin-left: 10px;">
+<b>Background Image</b> can be set using the tag background-image.<br> It takes the image in url as said in the example.<br><br>
+a) Url("image directory"). We have to set the image path inside the tag url. It accepts either of the given values.<br>
+b) None, if no background image is required.<br>
+</div><br>
+<b><u>Examples</u></b><br><br>
+<b>Example 1:</b><br>
+<div style="margin-left: 10px; color: #865476; border: #929292 dashed 1px">
+&lt;div style="background-image: url('test.jpg');"&gt; color name 
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/div&gt;<br><br>
+<b style="background-color: #daddad;">Result:</b><br>
+<div style="background-image: url('test.jpeg');"> color name <br><br><br></div><br>
+</div><br>
+<b>Example 2:</b><br>
+<div style="margin-left: 10px; color: #865476; border: #929292 dashed 1px">
+&lt;font style="background-image: none; background-color: green; "&gt; color using hex values
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/font&gt;<br><br>
+<b style="background-color: #daddad;">Result:</b><br>
+<font style="background-image: none; background-color: green;"> color using hex values <br><br></font>
+</div><br>
+Now you can see that the image <img src="test.jpeg" alt="test"> has been set as background for the div tag.<br>
+As none is set for font tag (example 2). Nothing shows up there.<br><br>
+<div align=center>
+<a href="backp2.php"><img border=0 src="../..//images/prev.gif" title="Background Color" alt="Background Color"></a>
+<a href="backp4.php"><img border=0 src="../..//images/next.gif" title="Background repeat" alt="Background repeat"></a>
+</div>
+</td></tr></table><table><tr><td>
+<div align=center>
+<script type="text/javascript"><!--
+google_ad_client = "ca-pub-3229609591361912";
+/* hscripts-tut-728-90 */
+google_ad_slot = "6002636349";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div><br>
+</td></tr>
+</table><br>
+</div>
+<table align=center cellpadding=0 cellspacing=0 style="width:95%;">
+<tr><td class="abouttablehead">
+<div><b>A Note</b></div></td></tr>
+<tr><td class="abouttabletext">
+CSS - Cascading Style Sheets can be used along with html tags as explained in this site.
+This simple CSS will help you to create much elegant and neat html web pages.
+This does not need any additional softwares or codings. 
+All web browser are capable of handing CSS codes.
+<br><br>
+Note 2: If required you can using &lt;span&gt; instead of &lt;div&gt; tags. 
+div tag will start and end on new lines. span will not exceed the tag area.
+<br>
+</td></tr>
+</table>
+<td class="addcol">
+<!-- Add table -->
+<table class="addbox">
+<tr>
+<td style="vertical-align:top;" align="center">
+		<table border="0" cellspacing="0" cellpadding="0" width="153px" style="margin:0 auto;">
+  		<tr><td class="righttitle">Other Links</td></tr>
+		<tr><td class="box_middle"> 
+       
+	   <br><div align=center>
+<a href='http://www.hioxindia.com/' style='text-decoration:none;'><img src='http://www.hscripts.com/images/hioxindia-ad.jpg' alt='web hosting' height='125' width='125'></a><br><br>
+
+<!-- BuySellAds.com Ad Code -->
+<script type="text/javascript">
+(function(){
+  var bsa = document.createElement('script');
+     bsa.type = 'text/javascript';
+     bsa.async = true;
+     bsa.src = '//s3.buysellads.com/ac/bsa.js';
+  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(bsa);
+})();
+</script>
+<!-- End BuySellAds.com Ad Code -->
+
+
+<!-- BuySellAds.com Zone Code -->
+<div id="bsap_1240680" class="bsarocks bsap_0d84fbd7b2bcdfb0aae601a8db1d222c"></div>
+<!-- End BuySellAds.com Zone Code -->
+
+</div>       
+</td></tr>
+   		<tr><td class="right_box_foot">&nbsp;</td></tr>
+		</table>
+</td>
+</tr>
+</td></tr>
+</table>
+
+ <tr class="footer">
+
+  	<td>&nbsp;</td>
+    <td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class='footer_center'>
+<tr>
+<td class="footer_left"></td>
+<td class="footer_middle">
+<a href="http://www.hscripts.com/license/ppolicy.html">Privacy Policy | </a>
+<a href="http://www.hscripts.com/license/terms.html">Terms and Conditions | </a>
+<a href="http://www.hscripts.com/license/hioxlicense.html">License | </a>
+<a href="http://www.hscripts.com/sitemap.xml">Sitemap | </a>
+<a href="http://www.hscripts.com/contact.php">Contact Us</a>
+<a style='color: #ffffff;float:right;'>All Rights reserved &copy; hscripts.com</a>
+</td>
+
+<td class="footer_right"></td>
+</tr>
+</table>
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+  </table>
+  </body>
+  </html>  
+

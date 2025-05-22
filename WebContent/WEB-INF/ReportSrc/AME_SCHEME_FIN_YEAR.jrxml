@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="AME_SCHEME_FIN_YEAR"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="430"
+		 pageHeight="842"
+		 columnWidth="430"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="fin_year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="imgpath" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="monthval" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="false" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT sch.sname,f1.sch_sno,
+ -- f1.design / 1000 ,
+  f2.supplied / 1000 as supplied,
+  f3.demand / 100000 as demand,
+  f4.remarks,
+  f1.year,
+  DECODE(f1.month,1,'JANUARY', 2,'February', 3,'March', 4,'April', 5,'May', 6,'June', 7,'July', 8,'August', 9,'September', 10,'October', 11,'November', 12,'December', 'N/A') AS MONTH
+FROM (
+  (SELECT sch_sno ,
+    sch_name AS sname
+  FROM pms_sch_master
+  WHERE   
+    sch_sno   IN
+    ( SELECT sch_sno  FROM PMS_DCB_DIV_SCHEME_MAP WHERE office_id=$P{office_id}
+    )
+  ) sch
+JOIN
+  (SELECT PERFORM_DESC_SNO,
+    MONTH,
+    YEAR,
+    sch_sno,
+    SUM(QTY_OR_AMOUNT)*1000 AS design
+  FROM PMS_AME_TRN_SCH_PERFORM_MTH
+  WHERE fin_year      =$P{fin_year}
+  AND perform_desc_sno=8 and office_id=$P{office_id}
+  GROUP BY YEAR,
+    MONTH,
+    sch_sno,
+    perform_desc_sno
+  ) f1
+ON f1.sch_sno=sch.sch_sno
+JOIN
+  (SELECT PERFORM_DESC_SNO,
+    MONTH,
+    YEAR,
+    sch_sno,
+    SUM(QTY_OR_AMOUNT)*1000 AS supplied
+  FROM PMS_AME_TRN_SCH_PERFORM_MTH
+  WHERE fin_year      =$P{fin_year}
+  AND perform_desc_sno=2 and office_id=$P{office_id}
+  GROUP BY YEAR,
+    MONTH,
+    sch_sno,
+    perform_desc_sno
+  ) f2
+ON f1.sch_sno =f2.sch_sno
+AND f2.sch_sno=sch.sch_sno
+AND f1.month  =f2.month
+JOIN
+  (SELECT PERFORM_DESC_SNO,
+    sch_sno,
+    MONTH,
+    YEAR,
+    SUM(QTY_OR_AMOUNT)* 100000 AS demand
+  FROM PMS_AME_TRN_SCH_PERFORM_MTH
+  WHERE fin_year      =$P{fin_year}
+  AND perform_desc_sno=5 and office_id=$P{office_id}
+  GROUP BY YEAR,
+    MONTH,
+    sch_sno,
+    perform_desc_sno
+  ) f3
+ON f3.sch_sno =f2.sch_sno
+AND f3.sch_sno=sch.sch_sno
+AND f1.month  =f3.month
+JOIN
+  (SELECT PERFORM_DESC_SNO,
+    YEAR,
+    sch_sno,
+    REMARKS,
+    MONTH,
+    fin_year
+  FROM PMS_AME_TRN_SCH_PERFORM_MTH
+  WHERE fin_year      =$P{fin_year}
+  AND perform_desc_sno=9 and office_id=$P{office_id}
+  ) f4
+ON f4.sch_sno =f2.sch_sno
+AND f4.sch_sno=sch.sch_sno
+AND f1.month  =f4.month )
+ORDER BY f1.sch_sno,f1.year,f1.month]]></queryString>
+
+	<field name="SNAME" class="java.lang.String"/>
+	<field name="SUPPLIED" class="java.math.BigDecimal"/>
+	<field name="DEMAND" class="java.math.BigDecimal"/>
+	<field name="MONTH" class="java.lang.String"/>
+	<field name="YEAR" class="java.lang.String"/>
+	<field name="remarks" class="java.lang.String"/>
+
+
+		<group  name="scheme" >
+			<groupExpression><![CDATA[$F{SNAME}]]></groupExpression>
+			<groupHeader>
+			<band height="44"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="53"
+						y="0"
+						width="146"
+						height="43"
+						key="staticText-1"/>
+					<box>					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Month]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="295"
+						y="0"
+						width="97"
+						height="43"
+						key="staticText-5"/>
+					<box>					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Demand Raised (Lakhs)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="199"
+						y="0"
+						width="96"
+						height="43"
+						key="staticText-6"/>
+					<box>					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Supplied Quantity (ML)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="24"
+						y="0"
+						width="29"
+						height="43"
+						key="staticText-8"/>
+					<box>					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Sl.No]]></text>
+				</staticText>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="12"  isSplitAllowed="true" >
+				<break>
+					<reportElement
+						x="0"
+						y="7"
+						width="430"
+						height="0"
+						key="element-1"/>
+				</break>
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="93"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="71"
+						width="428"
+						height="20"
+						key="textField"/>
+					<box leftPadding="14">					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[" Scheme Name :" +  $F{SNAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="52"
+						width="428"
+						height="18"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{office_} +","+$P{fin_year}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="428"
+						height="52"
+						backcolor="#CCCCFF"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[" Statement of Water Supplied And Demand Raised  " + $P{fin_year}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="52"
+						y="0"
+						width="147"
+						height="20"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{MONTH}+"-"+$F{YEAR}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.000" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="199"
+						y="0"
+						width="96"
+						height="20"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{SUPPLIED}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="287"
+						y="0"
+						width="105"
+						height="20"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DEMAND}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="24"
+						y="0"
+						width="28"
+						height="20"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{scheme_COUNT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

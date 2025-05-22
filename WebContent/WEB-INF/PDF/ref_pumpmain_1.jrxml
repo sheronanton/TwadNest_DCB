@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="ref_pumpmain_1"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="707"
+		 pageHeight="842"
+		 columnWidth="647"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="sch_no" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="off_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="ctxpath" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["E:\\workspace\\twad1\\WebContent\\WEB-INF\\PDF\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString><![CDATA[select PMS_ASSET_PMAIN_SNO,
+OFFICE_ID,
+PROJECT_ID,
+SCH_SNO,
+case TYPE_OF_PMAIN
+when 1 then 'pmain1'
+when 2 then 'pmain2'
+when 3 then 'pmain3'
+end as TYPE_OF_PMAIN,
+case CLASS_OF_MAIN
+when 1 then 'class1'
+when 2 then 'class2'
+when 3 then 'class3'
+end as CLASS_OF_MAIN,
+DIAMETER,
+LENGTH_MAIN,
+LOCATION_FROM,
+LOCATION_TO from pms_sch_asset_pmain
+where SCH_SNO=$P{sch_no}
+and OFFICE_ID=$P{off_id}]]></queryString>
+
+	<field name="PMS_ASSET_PMAIN_SNO" class="java.math.BigDecimal"/>
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="PROJECT_ID" class="java.math.BigDecimal"/>
+	<field name="SCH_SNO" class="java.math.BigDecimal"/>
+	<field name="TYPE_OF_PMAIN" class="java.lang.String"/>
+	<field name="CLASS_OF_MAIN" class="java.lang.String"/>
+	<field name="DIAMETER" class="java.math.BigDecimal"/>
+	<field name="LENGTH_MAIN" class="java.math.BigDecimal"/>
+	<field name="LOCATION_FROM" class="java.lang.String"/>
+	<field name="LOCATION_TO" class="java.lang.String"/>
+
+
+		<group  name="Sub" >
+			<groupExpression><![CDATA[$F{PMS_ASSET_PMAIN_SNO}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="254"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="4"
+						width="647"
+						height="19"
+						backcolor="#9999FF"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" pdfFontName="Helvetica" size="16" isBold="false"/>
+					</textElement>
+				<text><![CDATA[REFERENCE]]></text>
+				</staticText>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="97"
+						width="500"
+						height="5"
+						key="subreport-1"
+						positionType="Float"/>
+					<subreportParameter  name="sch_no">
+						<subreportParameterExpression><![CDATA[$P{sch_no}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="off_id">
+						<subreportParameterExpression><![CDATA[$P{off_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="ctxpath">
+						<subreportParameterExpression><![CDATA[$P{ctxpath}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_pumpmain_1_subreport2.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="86"
+						width="500"
+						height="5"
+						key="subreport-2"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_Booster_sub.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="5"
+						y="108"
+						width="500"
+						height="5"
+						key="subreport-3"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_pumpmain_1_subreport0.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="5"
+						y="125"
+						width="500"
+						height="5"
+						key="subreport-4"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+"ref_pumpmain_1_subreport1.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="5"
+						y="144"
+						width="500"
+						height="5"
+						key="subreport-5"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_pumpmain_1_subreport3.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="25"
+						width="500"
+						height="5"
+						key="subreport-7"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_pumpmain_1_subreport8.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="56"
+						width="500"
+						height="5"
+						key="subreport-8"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_pumpmain_1_subreport10.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="67"
+						width="500"
+						height="5"
+						key="subreport-9"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+"ref_pumpmain_1_subreport11.jasper"]]></subreportExpression>
+				</subreport>
+				<line direction="BottomUp">
+					<reportElement
+						x="0"
+						y="166"
+						width="647"
+						height="1"
+						forecolor="#006666"
+						key="line-2"
+						positionType="Float"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="42"
+						width="500"
+						height="4"
+						key="subreport-10"
+						positionType="Float"/>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath}+ "ref_pumpmain_1_subreport12.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

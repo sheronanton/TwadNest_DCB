@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="head_source_1"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="sch_no" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="off_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="ctxpath" isForPrompting="true" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT z.PMS_ASSET_HW_PS_SNO,
+  z.SCH_SNO,
+  z.OFFICE_ID,
+  z.TYPE_OF_PUMPSET,
+  z.DUTY,
+  z.HEAD,
+  z.QUANTITY,
+  z.REMARKS,
+  z.HORSE_POWER,
+  x.PMS_ASSET_HW_SNO,
+  x.OFFICE_ID,
+  x.SCH_SNO,
+  x.TYPE_OF_SOURCE,
+  x.DIAMETER,
+  x.DEPTH_WELL,
+  x.DIA_PUMPHOUSE,
+  x.LENGTH_PUMPHOUSE,
+  x.DIA_RADIAL,
+  x.DRAW_QTY,
+  x.SOURCE_LOCATION,
+  x.REMARKS,
+  y.SCH_SNO,
+  y.SCH_NAME
+FROM
+  (SELECT 
+case TYPE_OF_PUMPSET
+when 1 then 'pumpset1'
+when 2 then 'pumpset2'
+when 3 then 'pumpset3'
+end as TYPE_OF_PUMPSET
+,OFFICE_ID,
+    DUTY,SCH_SNO,
+    HEAD,
+    QUANTITY,
+    REMARKS,
+    HORSE_POWER,
+    PMS_ASSET_HW_PS_SNO
+  FROM pms_sch_asset_hw_pumpset
+  WHERE SCH_SNO=$P{sch_no}
+  AND OFFICE_ID=$P{off_id}
+  )z
+JOIN
+  (SELECT PMS_ASSET_HW_SNO,OFFICE_ID,SCH_SNO,
+   case TYPE_OF_SOURCE
+when 1 then 'Pumpset'
+when 2 then 'BoreWell'
+when 3 then 'Bore'
+end as TYPE_OF_SOURCE
+
+,
+    DIAMETER,
+    DEPTH_WELL,
+    DIA_PUMPHOUSE,
+    LENGTH_PUMPHOUSE,
+    DIA_RADIAL,
+    DRAW_QTY,
+    SOURCE_LOCATION,
+    REMARKS
+  FROM pms_sch_asset_hw_source
+  WHERE SCH_SNO=$P{sch_no}
+  AND OFFICE_ID=$P{off_id}
+  )x
+ON z.PMS_ASSET_HW_PS_SNO=x.PMS_ASSET_HW_SNO
+AND z.OFFICE_ID         =x.OFFICE_ID
+join
+(select SCH_NAME,SCH_SNO from PMS_SCH_MASTER where SCH_SNO=$P{sch_no})y
+on
+ z.SCH_SNO         =y.SCH_SNO
+ and
+  x.SCH_SNO         =y.SCH_SNO]]></queryString>
+
+	<field name="PMS_ASSET_HW_PS_SNO" class="java.math.BigDecimal"/>
+	<field name="SCH_SNO" class="java.math.BigDecimal"/>
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="TYPE_OF_PUMPSET" class="java.lang.String"/>
+	<field name="DUTY" class="java.math.BigDecimal"/>
+	<field name="HEAD" class="java.math.BigDecimal"/>
+	<field name="QUANTITY" class="java.math.BigDecimal"/>
+	<field name="REMARKS" class="java.lang.String"/>
+	<field name="HORSE_POWER" class="java.math.BigDecimal"/>
+	<field name="PMS_ASSET_HW_SNO" class="java.math.BigDecimal"/>
+	<field name="TYPE_OF_SOURCE" class="java.lang.String"/>
+	<field name="DIAMETER" class="java.math.BigDecimal"/>
+	<field name="DEPTH_WELL" class="java.math.BigDecimal"/>
+	<field name="DIA_PUMPHOUSE" class="java.math.BigDecimal"/>
+	<field name="LENGTH_PUMPHOUSE" class="java.math.BigDecimal"/>
+	<field name="DIA_RADIAL" class="java.math.BigDecimal"/>
+	<field name="DRAW_QTY" class="java.math.BigDecimal"/>
+	<field name="SOURCE_LOCATION" class="java.lang.String"/>
+	<field name="SCH_NAME" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="19"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="37"
+						y="0"
+						width="398"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SCH_NAME} + "  Head Works- Source and Pumpset Details  "]]></textFieldExpression>
+				</textField>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="177"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="56"
+						y="6"
+						width="104"
+						height="23"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Source Location ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="56"
+						y="74"
+						width="104"
+						height="23"
+						key="staticText-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Radial Arms ]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="180"
+						y="6"
+						width="324"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SOURCE_LOCATION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="56"
+						y="39"
+						width="104"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{TYPE_OF_SOURCE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="180"
+						y="39"
+						width="343"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DIAMETER}+ "MM DIA " + $F{DEPTH_WELL}+ " M LENGTH"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="180"
+						y="75"
+						width="338"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DIAMETER}+"MM DIA"+$F{DEPTH_WELL}+"M LENGTH"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="56"
+						y="103"
+						width="104"
+						height="23"
+						key="staticText-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Quantity ]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="180"
+						y="106"
+						width="338"
+						height="18"
+						key="textField-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DRAW_QTY}+"MLD"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="160"
+						y="6"
+						width="17"
+						height="23"
+						key="staticText-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="160"
+						y="39"
+						width="17"
+						height="23"
+						key="staticText-7"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="160"
+						y="74"
+						width="17"
+						height="23"
+						key="staticText-8"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="160"
+						y="103"
+						width="17"
+						height="23"
+						key="staticText-9"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified">
+						<font pdfFontName="Times-Roman" size="12" isBold="false"/>
+					</textElement>
+				<text><![CDATA[:]]></text>
+				</staticText>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

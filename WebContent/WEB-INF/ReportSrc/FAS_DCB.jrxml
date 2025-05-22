@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="FAS_DCB"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="878"
+		 pageHeight="842"
+		 columnWidth="878"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<queryString><![CDATA[SELECT Off1.OFFICE_NAME AS reg,
+  off2.OFFICE_NAME      AS div,
+  wc.amt,
+  jour.demand_FAS,
+  (demand_FAS-wc.amt) AS diff1,
+  rec1.recp_amt,dcb_collect.collection,
+  (rec1.recp_amt-dcb_collect.collection) as diff2
+FROM
+  (SELECT REGION_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='RN'
+  )Off1
+JOIN
+  (SELECT REGION_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='DN'
+  AND OFFICE_ID       IN
+    (SELECT OFFICE_ID FROM PMS_DCB_DIV_DIST_MAP
+    )
+  )off2
+ON off2.REGION_OFFICE_ID=off1.OFFICE_ID
+JOIN
+  (SELECT ROUND(SUM(TOTAL_AMT),2) AS amt,
+    office_id
+  FROM PMS_DCB_WC_BILLING
+  WHERE ( (MONTH >=4
+  AND YEAR        = 2012)
+  OR (MONTH      <=3
+  AND YEAR        = 2013) )
+  GROUP BY office_id
+  ) wc
+ON wc.OFFICE_ID=off2.OFFICE_ID
+JOIN
+  (SELECT SUM(AMOUNT) AS demand_FAS ,
+    FAS_JOURNAL_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID
+  FROM FAS_JOURNAL_TRANSACTION ,
+    FAS_JOURNAL_MASTER
+  WHERE ( ( FAS_JOURNAL_TRANSACTION.CASHBOOK_MONTH     >=4
+  AND FAS_JOURNAL_TRANSACTION.CASHBOOK_YEAR             = 2012)
+  OR (FAS_JOURNAL_TRANSACTION.CASHBOOK_MONTH           <=3
+  AND FAS_JOURNAL_TRANSACTION.CASHBOOK_YEAR             = 2013) )
+  AND FAS_JOURNAL_TRANSACTION.CR_DR_INDICATOR           ='DR'
+  AND FAS_JOURNAL_TRANSACTION.ACCOUNT_HEAD_CODE        IN (780406)
+  AND FAS_JOURNAL_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID IN
+    (SELECT office_id FROM PMS_DCB_DIV_DIST_MAP
+    )
+  AND fas_journal_transaction.CASHBOOK_MONTH          =fas_journal_master.CASHBOOK_MONTH
+  AND fas_journal_transaction.CASHBOOK_YEAR           =fas_journal_master.CASHBOOK_YEAR
+  AND fas_journal_transaction.voucher_no              =fas_journal_master.voucher_no
+  AND fas_journal_transaction.ACCOUNTING_FOR_OFFICE_ID=fas_journal_master.ACCOUNTING_FOR_OFFICE_ID
+  AND fas_journal_master.JOURNAL_TYPE_CODE            =73
+  AND fas_journal_master.JOURNAL_STATUS               ='L'
+  GROUP BY FAS_JOURNAL_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID
+  ) jour
+ON jour.ACCOUNTING_FOR_OFFICE_ID =off2.OFFICE_ID
+  --AND jour.CASHBOOK_YEAR            =wc.year
+  --AND jour.CASHBOOK_MONTH           =wc.month
+AND jour.ACCOUNTING_FOR_OFFICE_ID =wc.OFFICE_ID
+
+join
+(
+SELECT FAS_RECEIPT_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID, SUM(FAS_RECEIPT_TRANSACTION.AMOUNT ) AS recp_amt FROM FAS_RECEIPT_TRANSACTION ,
+  FAS_RECEIPT_MASTER
+WHERE ( ( FAS_RECEIPT_TRANSACTION.CASHBOOK_MONTH     >=4
+AND FAS_RECEIPT_TRANSACTION.CASHBOOK_YEAR             = 2012)
+OR (FAS_RECEIPT_TRANSACTION.CASHBOOK_MONTH           <=3
+AND FAS_RECEIPT_TRANSACTION.CASHBOOK_YEAR             = 2013) )
+AND FAS_RECEIPT_TRANSACTION.SUB_LEDGER_TYPE_CODE      =10
+AND FAS_RECEIPT_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID IN   
+  (SELECT office_id FROM PMS_DCB_DIV_DIST_MAP
+  )
+AND FAS_RECEIPT_TRANSACTION.CASHBOOK_MONTH          =FAS_RECEIPT_MASTER.CASHBOOK_MONTH
+AND FAS_RECEIPT_TRANSACTION.CASHBOOK_YEAR           =FAS_RECEIPT_MASTER.CASHBOOK_YEAR
+AND FAS_RECEIPT_TRANSACTION.receipt_no              =FAS_RECEIPT_MASTER.receipt_no
+AND FAS_RECEIPT_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID=FAS_RECEIPT_MASTER.ACCOUNTING_FOR_OFFICE_ID
+AND FAS_RECEIPT_MASTER.SUB_LEDGER_TYPE_CODE         = 14
+AND FAS_RECEIPT_MASTER.RECEIPT_STATUS               ='L'
+GROUP BY FAS_RECEIPT_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID
+ORDER BY FAS_RECEIPT_TRANSACTION.ACCOUNTING_FOR_OFFICE_ID
+) rec1
+on rec1.ACCOUNTING_FOR_OFFICE_ID =wc.OFFICE_ID
+AND rec1.ACCOUNTING_FOR_OFFICE_ID =jour.ACCOUNTING_FOR_OFFICE_ID
+AND rec1.ACCOUNTING_FOR_OFFICE_ID =off2.OFFICE_ID
+
+join
+
+(
+     select 
+  sum(COLN_INCLUDE_CHARGES)   as collection,office_id
+ from 
+  PMS_DCB_LEDGER_ACTUAL 
+  
+  WHERE ( (month >=4
+  AND year        = 2012)
+  OR (month      <=3
+  AND year        = 2013) )
+  GROUP BY office_id
+
+)dcb_collect
+on dcb_collect.OFFICE_ID =wc.OFFICE_ID
+  and dcb_collect.OFFICE_ID =jour.ACCOUNTING_FOR_OFFICE_ID
+and dcb_collect.OFFICE_ID =off2.OFFICE_ID
+]]></queryString>
+
+	<field name="REG" class="java.lang.String"/>
+	<field name="DIV" class="java.lang.String"/>
+	<field name="AMT" class="java.math.BigDecimal"/>
+	<field name="DEMAND_FAS" class="java.math.BigDecimal"/>
+	<field name="DIFF1" class="java.math.BigDecimal"/>
+	<field name="RECP_AMT" class="java.math.BigDecimal"/>
+	<field name="COLLECTION" class="java.math.BigDecimal"/>
+	<field name="DIFF2" class="java.math.BigDecimal"/>
+
+
+		<group  name="reg" >
+			<groupExpression><![CDATA[$F{REG}]]></groupExpression>
+			<groupHeader>
+			<band height="21"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="1"
+						width="353"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{REG}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="44"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="46"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="14"
+						y="0"
+						width="268"
+						height="45"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Name of Division]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="282"
+						y="0"
+						width="112"
+						height="45"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[As Per DCB   ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="395"
+						y="0"
+						width="95"
+						height="45"
+						key="staticText-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[As Per FAS   ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="491"
+						y="0"
+						width="84"
+						height="45"
+						key="staticText-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Difference]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="568"
+						y="0"
+						width="100"
+						height="45"
+						key="staticText-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[As Per FAS   ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="670"
+						y="0"
+						width="100"
+						height="45"
+						key="staticText-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[As Per DCB   ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="770"
+						y="0"
+						width="100"
+						height="45"
+						key="staticText-7"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Difference]]></text>
+				</staticText>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="19"
+						y="0"
+						width="269"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DIV}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="288"
+						y="0"
+						width="107"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AMT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="395"
+						y="0"
+						width="94"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DEMAND_FAS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="491"
+						y="0"
+						width="84"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DIFF1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="675"
+						y="0"
+						width="100"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COLLECTION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="575"
+						y="0"
+						width="100"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{RECP_AMT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="775"
+						y="0"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DIFF2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="20"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

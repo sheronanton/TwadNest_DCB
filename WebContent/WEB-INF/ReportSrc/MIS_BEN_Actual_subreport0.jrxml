@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="MIS_BEN_Actual_subreport0"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="798"
+		 pageHeight="802"
+		 columnWidth="798"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="office_id" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="blksno" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="pyear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="pmonth" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="blkname" isForPrompting="true" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT (blk1.NET_DUE_19       -col10)/100000                     AS arrdmd,
+  ( (COLN_FOR_MTH_YES_YR_WC_14+COLN_FOR_MTH_WC_15)-col10)/100000 AS arrcol,
+  CASE
+    WHEN (blk1.NET_DUE_19           -col10) >0 
+  THEN  (( ROUND( ( ( COLN_FOR_MTH_YES_YR_WC_14+COLN_FOR_MTH_WC_15)-col10  ) ,2) ) / ROUND((to_number(blk1.NET_DUE_19)-to_number(col10 )),2))*100
+    ELSE NULL
+  END                                                   AS avg1,
+  col10                     /100000                     AS curdmd,
+  (COLN_FOR_MTH_YES_YR_WC_14+COLN_FOR_MTH_WC_15)/100000 AS curcoll,
+  CASE
+    WHEN (col10) !=0
+    THEN ROUND( (COLN_FOR_MTH_WC_15 *100)/ (col10),2)
+    ELSE NULL
+  END AS avg2,
+  CASE
+    WHEN col10 IS NOT NULL
+    THEN 'Total'
+    ELSE ''
+  END AS Head
+FROM (
+  (SELECT SUM(NET_DUE)          AS NET_DUE_19,
+    SUM(COLN_FOR_MTH_YES_YR_WC) AS COLN_FOR_MTH_YES_YR_WC_14,
+    SUM(DMD_FOR_MTH_WC) AS col10,
+    office_id,
+   BEN_TYPE_GROUP,
+    BLOCK_SNO
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE office_id  =$P{office_id}
+  AND MONTH        =$P{pmonth}
+  AND YEAR         =$P{pyear}
+  AND BLOCK_SNO   <> 0
+  AND BEN_TYPE_GROUP <=6
+  AND BLOCK_SNO    =$P{blksno}
+  GROUP BY office_id,
+    BEN_TYPE_GROUP,
+    BLOCK_SNO
+  )blk1
+JOIN
+  (SELECT SUM(COLN_FOR_MTH_WC)        AS COLN_FOR_MTH_WC_15,
+    office_id,
+    BEN_TYPE_GROUP,
+    BLOCK_SNO
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE office_id  =$P{office_id}
+  AND MONTH        =$P{month}
+  AND YEAR         =$P{year}
+  AND BLOCK_SNO   <> 0
+  AND BEN_TYPE_GROUP <=6
+  AND BLOCK_SNO    =$P{blksno}
+  GROUP BY office_id,
+    BEN_TYPE_GROUP,
+    BLOCK_SNO
+  )blk2
+ON blk2.office_id   =blk1.office_id
+AND blk2.BEN_TYPE_GROUP=blk1.BEN_TYPE_GROUP
+AND blk2.BLOCK_SNO  =blk1.BLOCK_SNO 
+)
+order by blk2.office_id,blk2.BEN_TYPE_GROUP,blk2.BLOCK_SNO]]></queryString>
+
+	<field name="ARRDMD" class="java.math.BigDecimal"/>
+	<field name="ARRCOL" class="java.math.BigDecimal"/>
+	<field name="AVG1" class="java.math.BigDecimal"/>
+	<field name="CURDMD" class="java.math.BigDecimal"/>
+	<field name="CURCOLL" class="java.math.BigDecimal"/>
+	<field name="AVG2" class="java.math.BigDecimal"/>
+	<field name="HEAD" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="445"
+						y="0"
+						width="58"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ARRDMD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="503"
+						y="0"
+						width="58"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ARRCOL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="561"
+						y="0"
+						width="43"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="626"
+						y="0"
+						width="58"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="6" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CURDMD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="682"
+						y="0"
+						width="64"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CURCOLL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="746"
+						y="0"
+						width="52"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="6" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="433"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="11" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{HEAD}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

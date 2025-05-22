@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Water_Charges_Calculation"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="423"
+		 pageHeight="842"
+		 columnWidth="423"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="ctxpath" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_name" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="mvalue" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="schtype" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$F{SCHEME_TYPE_ID}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="imgpath" isForPrompting="true" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT DR.dramt,
+  CR.cramt,
+  SCH.SCH_TYPE_DESC,
+  DR.SCHEME_TYPE_ID,
+  FAS.ACCOUNTING_UNIT_NAME,
+  FAS.ACCOUNTING_UNIT_ID
+FROM (
+  (SELECT SUM(AMOUNT) AS dramt,
+    CASHBOOK_MONTH,
+    CASHBOOK_YEAR,
+    OFFICE_ID,
+    SCHEME_TYPE_ID
+  FROM PMS_DCB_JOURNAL_DETAILS
+  WHERE CR_DR_INDICATOR='DR'
+  AND OFFICE_ID        =$P{office_id}
+  AND CASHBOOK_MONTH   =$P{month}
+  AND CASHBOOK_YEAR    =$P{year}
+  GROUP BY OFFICE_ID,
+    SCHEME_TYPE_ID,
+    CASHBOOK_MONTH,
+    CASHBOOK_YEAR
+  )DR
+JOIN
+  (SELECT SUM(AMOUNT) AS cramt,
+    CASHBOOK_MONTH,
+    CASHBOOK_YEAR,
+    OFFICE_ID,
+    SCHEME_TYPE_ID
+  FROM PMS_DCB_JOURNAL_DETAILS
+  WHERE CR_DR_INDICATOR='CR'
+  AND OFFICE_ID        =$P{office_id}
+  AND CASHBOOK_MONTH   =$P{month}
+  AND CASHBOOK_YEAR    =$P{year}
+  GROUP BY OFFICE_ID,
+    SCHEME_TYPE_ID,
+    CASHBOOK_MONTH,
+    CASHBOOK_YEAR
+  )CR
+ON DR.OFFICE_ID      =CR.OFFICE_ID
+AND DR.SCHEME_TYPE_ID=CR.SCHEME_TYPE_ID
+JOIN
+  ( SELECT SCH_TYPE_DESC, SCH_TYPE_ID FROM PMS_SCH_LKP_TYPE
+  )SCH
+ON SCH.SCH_TYPE_ID=DR.SCHEME_TYPE_ID
+LEFT JOIN
+  (SELECT ACCOUNTING_UNIT_ID,
+    ACCOUNTING_UNIT_NAME,
+    ACCOUNTING_UNIT_OFFICE_ID
+  FROM FAS_MST_ACCT_UNITS
+  WHERE ACCOUNTING_UNIT_OFFICE_ID =$P{office_id}
+  )FAS
+ON FAS.ACCOUNTING_UNIT_OFFICE_ID=CR.OFFICE_ID )]]></queryString>
+
+	<field name="DRAMT" class="java.math.BigDecimal"/>
+	<field name="CRAMT" class="java.math.BigDecimal"/>
+	<field name="SCH_TYPE_DESC" class="java.lang.String"/>
+	<field name="SCHEME_TYPE_ID" class="java.lang.String"/>
+	<field name="ACCOUNTING_UNIT_NAME" class="java.lang.String"/>
+	<field name="ACCOUNTING_UNIT_ID" class="java.math.BigDecimal"/>
+
+	<variable name="rc" class="java.lang.Integer" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+
+		<group  name="SCH_TYPE_DESC" >
+			<groupExpression><![CDATA[$F{SCH_TYPE_DESC}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="63"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="32"
+						width="414"
+						height="25"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{office_name}+" - "+$P{mvalue}+" "+$P{year}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="0"
+						y="7"
+						width="414"
+						height="25"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Beneficiary Water Charges  ]]></text>
+				</staticText>
+				<image  evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Transparent"
+						x="51"
+						y="7"
+						width="73"
+						height="41"
+						key="image-1"
+						positionType="Float"
+						isRemoveLineWhenBlank="true"
+						isPrintInFirstWholeBand="true"
+						isPrintWhenDetailOverflows="true"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<graphicElement stretchType="NoStretch" pen="None"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imgpath}+"twademblem.gif"]]></imageExpression>
+				</image>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="20"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="2"
+						y="0"
+						width="30"
+						height="20"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<text><![CDATA[Sl.No.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="314"
+						y="0"
+						width="100"
+						height="20"
+						key="staticText-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<text><![CDATA[Total DR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="0"
+						width="191"
+						height="20"
+						key="staticText-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<text><![CDATA[Particulars ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="223"
+						y="0"
+						width="91"
+						height="20"
+						key="staticText-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<text><![CDATA[Total CR]]></text>
+				</staticText>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="21"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="Reference"  hyperlinkTarget="Self" >
+					<reportElement
+						x="32"
+						y="0"
+						width="191"
+						height="19"
+						forecolor="#0033FF"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SCH_TYPE_DESC}]]></textFieldExpression>
+						<hyperlinkReferenceExpression><![CDATA[$P{ctxpath}+"?command=journalpdfreport&year="+$P{year}+"&month="+$P{month}+"&mvalue="+$P{mvalue}+"&office_id="+$P{office_id}+"&office_name="+$P{office_name}+"&val="+$F{SCHEME_TYPE_ID}]]></hyperlinkReferenceExpression>
+
+						<hyperlinkParameter name="month">
+							<hyperlinkParameterExpression><![CDATA[$P{month}]]></hyperlinkParameterExpression>
+						</hyperlinkParameter>
+						<hyperlinkParameter name="year">
+							<hyperlinkParameterExpression><![CDATA[$P{year}]]></hyperlinkParameterExpression>
+						</hyperlinkParameter>
+						<hyperlinkParameter name="office_id">
+							<hyperlinkParameterExpression><![CDATA[$P{office_id}]]></hyperlinkParameterExpression>
+						</hyperlinkParameter>
+						<hyperlinkParameter name="office_name">
+							<hyperlinkParameterExpression><![CDATA[$P{office_name}]]></hyperlinkParameterExpression>
+						</hyperlinkParameter>
+						<hyperlinkParameter name="mvalue">
+							<hyperlinkParameterExpression><![CDATA[$P{mvalue}]]></hyperlinkParameterExpression>
+						</hyperlinkParameter>
+						<hyperlinkParameter name="schtype">
+							<hyperlinkParameterExpression><![CDATA[$F{SCHEME_TYPE_ID}]]></hyperlinkParameterExpression>
+						</hyperlinkParameter>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="RemoteAnchor"  hyperlinkTarget="Self" >
+					<reportElement
+						x="314"
+						y="0"
+						width="100"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DRAMT}]]></textFieldExpression>
+						<hyperlinkReferenceExpression><![CDATA[$F{SCH_TYPE_DESC}]]></hyperlinkReferenceExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="223"
+						y="0"
+						width="91"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CRAMT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="32"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{rc}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

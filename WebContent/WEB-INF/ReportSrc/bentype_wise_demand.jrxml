@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="bentype_wise_demand"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<queryString><![CDATA[select * from PMS_DCB_MST_BENEFICIARY]]></queryString>
+
+	<field name="BENEFICIARY_SNO" class="java.math.BigDecimal"/>
+	<field name="DISTRICT_CODE" class="java.math.BigDecimal"/>
+	<field name="BLOCK_SNO" class="java.math.BigDecimal"/>
+	<field name="OTHERS_PRIVATE_SNO" class="java.math.BigDecimal"/>
+	<field name="VILLAGE_PANCHAYAT_SNO" class="java.math.BigDecimal"/>
+	<field name="URBANLB_SNO" class="java.math.BigDecimal"/>
+	<field name="BENEFICIARY_TYPE_ID" class="java.math.BigDecimal"/>
+	<field name="BENEFICIARY_NAME" class="java.lang.String"/>
+	<field name="OFFICE_ADDRESS1" class="java.lang.String"/>
+	<field name="OFFICE_ADDRESS2" class="java.lang.String"/>
+	<field name="OFFICE_ADDRESS3" class="java.lang.String"/>
+	<field name="OFFICE_PIN_CODE" class="java.lang.String"/>
+	<field name="OFFICE_LANDLINE_NO" class="java.lang.String"/>
+	<field name="OFFICE_MOBILE_NO" class="java.lang.String"/>
+	<field name="OFFICE_EMAIL" class="java.lang.String"/>
+	<field name="BILLING_ADDRESS1" class="java.lang.String"/>
+	<field name="BILLING_ADDRESS2" class="java.lang.String"/>
+	<field name="BILLING_ADDRESS3" class="java.lang.String"/>
+	<field name="BILLING_PIN_CODE" class="java.lang.String"/>
+	<field name="BILLING_LANDLINE_NO" class="java.lang.String"/>
+	<field name="BILLING_MOBILE_NO" class="java.lang.String"/>
+	<field name="BILLING_EMAIL" class="java.lang.String"/>
+	<field name="BENEFICIARY_GROUP_ID" class="java.lang.String"/>
+	<field name="BENEFICIARY_USER_CODE" class="java.lang.String"/>
+	<field name="UPDATED_BY_USER_ID" class="java.lang.String"/>
+	<field name="UPDATED_DATE" class="oracle.sql.TIMESTAMP"/>
+	<field name="BEN_CONS_CATEGORY" class="java.math.BigDecimal"/>
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="BEN_DIV_SNO" class="java.math.BigDecimal"/>
+	<field name="TARIFF_MODE" class="java.lang.String"/>
+	<field name="INT_RATE" class="java.math.BigDecimal"/>
+	<field name="STATUS" class="java.lang.String"/>
+	<field name="OLD_OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="OLD_BENEFICIARY_SNO" class="java.math.BigDecimal"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="30"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="23"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="30"
+						y="5"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BENEFICIARY_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="163"
+						y="5"
+						width="100"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{STATUS}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="30"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</lastPageFooter>
+		<summary>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

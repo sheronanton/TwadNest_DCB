@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Tariff"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="842"
+		 pageHeight="595"
+		 columnWidth="782"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="ben" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="ctxpath" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["/root/Desktop/Test"]]></defaultValueExpression>
+	</parameter>
+	<queryString><![CDATA[SELECT 
+  BENEFICIARY_NAME,
+  BEN_TYPE_DESC,
+  DISTRICT_NAME,
+  DECODE(BLOCK_NAME,null,' ',CONCAT(BLOCK_NAME,' Block')) AS BLOCK_NAME
+FROM
+(
+  SELECT BENEFICIARY_SNO,
+    DISTRICT_CODE,
+    BLOCK_SNO,
+    BENEFICIARY_TYPE_ID,
+    BENEFICIARY_NAME
+  FROM PMS_DCB_MST_BENEFICIARY
+  WHERE BENEFICIARY_SNO=$P{ben}
+)a
+
+JOIN
+
+( 
+  SELECT 
+    BEN_TYPE_ID,
+    BEN_TYPE_DESC
+  FROM PMS_DCB_BEN_TYPE
+)b
+ON a.BENEFICIARY_TYPE_ID=b.BEN_TYPE_ID
+
+JOIN
+
+(
+  SELECT
+    DISTRICT_CODE,
+    DISTRICT_NAME
+  FROM COM_MST_DISTRICTS
+)c
+ON a.DISTRICT_CODE=c.DISTRICT_CODE
+
+LEFT OUTER JOIN
+
+(
+  SELECT
+    BLOCK_SNO,
+    BLOCK_NAME
+  FROM COM_MST_BLOCKS
+)d
+ON a.BLOCK_SNO=d.BLOCK_SNO]]></queryString>
+
+	<field name="BENEFICIARY_NAME" class="java.lang.String"/>
+	<field name="BEN_TYPE_DESC" class="java.lang.String"/>
+	<field name="DISTRICT_NAME" class="java.lang.String"/>
+	<field name="BLOCK_NAME" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="50"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="30"
+						y="0"
+						width="688"
+						height="26"
+						forecolor="#FFFFFF"
+						backcolor="#746F6F"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="16" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Tariff Details for " + $F{BENEFICIARY_NAME} + " " + $F{BEN_TYPE_DESC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="30"
+						y="26"
+						width="688"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DISTRICT_NAME} + " District " + $F{BLOCK_NAME}]]></textFieldExpression>
+				</textField>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="1"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="24"  isSplitAllowed="true" >
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="0"
+						width="633"
+						height="22"
+						key="subreport-1"/>
+					<subreportParameter  name="ben">
+						<subreportParameterExpression><![CDATA[$P{ben}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath} + "/Tariff_sub0.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

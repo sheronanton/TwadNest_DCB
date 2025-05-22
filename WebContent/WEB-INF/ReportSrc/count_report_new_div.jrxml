@@ -1,0 +1,1167 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="count_report_new_div"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="1000"
+		 pageHeight="842"
+		 columnWidth="1000"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="monthval" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT Off1.OFFICE_NAME AS reg,
+  off2.OFFICE_NAME      AS div,
+  pqty.qty,
+  collection.col,
+  pr.prvcount,
+  DECODE( ben1.ben1count,NULL,0, ben1.ben1count) AS ben1count,
+  DECODE( ben2.ben2count,NULL,0, ben2.ben2count) AS ben2count,
+  DECODE( met1.met1count,NULL,0, met1.met1count) AS met1count,
+  DECODE( met2.met2count,NULL,0, met2.met2count) AS met2count,
+  metfr.metfrcount,
+  wc.amt,
+  metnotset.metnotsetr,
+  metnfr.metnfrcount,
+  metsetdone.metsetdoner,
+  rate.ratecount,
+  ratenot.ratenotcount,
+  off2.OFFICE_ID,
+  ob.op,
+  prr.prc,
+  prrcr.prcr,
+  prrv.prvc,
+  prrf.prfc,
+  dmd.dmdc,
+  jr.st,
+  act.ltcount,
+  u_id.updated_by_user_id,
+  tb.TB_STATUS
+FROM (
+  (SELECT REGION_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='RN'
+  )Off1
+JOIN
+  (SELECT REGION_OFFICE_ID,
+    OFFICE_LEVEL_ID,
+    OFFICE_ID,
+    OFFICE_NAME
+  FROM COM_MST_ALL_OFFICES_VIEW
+  WHERE OFFICE_LEVEL_ID='DN'
+  AND OFFICE_ID       IN ($P{office_id})
+  )off2
+ON off2.REGION_OFFICE_ID=off1.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS prvcount
+  FROM COM_MST_PRIVATE
+  GROUP BY OFFICE_ID
+  )pr
+ON pr.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS ben1count
+  FROM PMS_DCB_MST_BENEFICIARY
+  WHERE BENEFICIARY_TYPE_ID <=6
+  AND BENEFICIARY_SNO       IN
+    (SELECT BENEFICIARY_SNO
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    ) and status='L'
+  GROUP BY OFFICE_ID
+  )ben1
+ON ben1.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS ben2count
+  FROM PMS_DCB_MST_BENEFICIARY
+  WHERE status            ='L'
+  AND BENEFICIARY_TYPE_ID >6
+  AND BENEFICIARY_SNO    IN
+    (SELECT BENEFICIARY_SNO
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    ) and status='L'
+  GROUP BY OFFICE_ID
+  )ben2
+ON ben2.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS met1count
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS       ='L'
+  AND BENEFICIARY_TYPE_ID <=6
+  GROUP BY OFFICE_ID
+  )met1
+ON met1.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS met2count
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS      ='L'
+  AND BENEFICIARY_TYPE_ID >6
+  GROUP BY OFFICE_ID
+  )met2
+ON met2.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS metnotsetr
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS='L'
+  AND SETTING_FLAG IS NULL
+  GROUP BY OFFICE_ID
+  )metnotset
+ON metnotset.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS metsetdoner
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS='L'
+  AND SETTING_FLAG IS NOT NULL
+  GROUP BY OFFICE_ID
+  )metsetdone
+ON metsetdone.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS metfrcount
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS='L'
+  AND SETTING_FLAG  ='FR'
+  GROUP BY OFFICE_ID
+  )metfr
+ON metfr.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS metnfrcount
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS ='L'
+  AND (SETTING_FLAG !='FR'
+  OR SETTING_FLAG   IS NULL)
+  GROUP BY OFFICE_ID
+  )metnfr
+ON metnfr.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS ratecount
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS='L'
+  AND TARIFF_RATE  IS NOT NULL
+  GROUP BY OFFICE_ID
+  )rate
+ON rate.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID ,
+    COUNT(*) AS ratenotcount
+  FROM PMS_DCB_MST_BENEFICIARY_METRE
+  WHERE METER_STATUS='L'
+  AND TARIFF_RATE  IS NULL
+  GROUP BY OFFICE_ID
+  )ratenot
+ON ratenot.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT (*) AS op,
+    OFFICE_ID,
+    FIN_YEAR,
+    MONTH
+  FROM PMS_DCB_OB_YEARLY
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND fin_year=$P{year}
+  AND MONTH   =$P{month}
+  GROUP BY office_id,
+    fin_year,
+    MONTH
+  ) ob
+ON ob.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT (*) AS prc,
+    OFFICE_ID,
+    YEAR,
+    MONTH
+  FROM PMS_DCB_TRN_MONTHLY_PR
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND beneficiary_sno IN
+    (SELECT beneficiary_sno
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    )
+  AND YEAR =$P{year}
+  AND MONTH=$P{month}
+  GROUP BY office_id,
+    YEAR,
+    MONTH
+  ) prr
+ON prr.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT (*) AS prcr,
+    OFFICE_ID,
+    YEAR,
+    MONTH
+  FROM PMS_DCB_TRN_MONTHLY_PR
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND beneficiary_sno IN
+    (SELECT beneficiary_sno
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    )
+  AND YEAR        =$P{year}
+  AND MONTH       =$P{month}
+  AND PROCESS_FLAG='CR'
+  GROUP BY office_id,
+    YEAR,
+    MONTH
+  ) prrcr
+ON prrcr.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT (*) AS prvc,
+    OFFICE_ID,
+    YEAR,
+    MONTH
+  FROM PMS_DCB_TRN_MONTHLY_PR
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND beneficiary_sno IN
+    (SELECT beneficiary_sno
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    )
+  AND YEAR        =$P{year}
+  AND MONTH       =$P{month}
+  AND PROCESS_FLAG='V'
+  GROUP BY office_id,
+    YEAR,
+    MONTH
+  ) prrv
+ON prrv.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT (*) AS prfc,
+    OFFICE_ID,
+    YEAR,
+    MONTH
+  FROM PMS_DCB_TRN_MONTHLY_PR
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND beneficiary_sno IN
+    (SELECT beneficiary_sno
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    )
+  AND YEAR        =$P{year}
+  AND MONTH       =$P{month}
+  AND PROCESS_FLAG='FR'
+  GROUP BY office_id,
+    YEAR,
+    MONTH
+  ) prrf
+ON prrf.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT (*) AS dmdc,
+    OFFICE_ID,
+    BILL_YEAR,
+    BILL_MONTH
+  FROM PMS_DCB_TRN_BILL_DMD
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND BILL_YEAR =$P{year}
+  AND BILL_MONTH=$P{month}
+  GROUP BY office_id,
+    BILL_YEAR,
+    BILL_MONTH
+  ) dmd
+ON dmd.OFFICE_ID=off2.OFFICE_ID )
+LEFT OUTER JOIN
+  (SELECT OFFICE_ID,
+    CASE
+      WHEN JOURNAL_POSTED IS NULL
+      THEN NULL
+      ELSE 'Yes'
+    END AS st
+  FROM PMS_DCB_FREEZE_STATUS
+  WHERE CASHBOOK_YEAR=$P{year}
+  AND CASHBOOK_MONTH =$P{month}
+  )jr
+ON jr.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT COUNT(DISTINCT beneficiary_sno) AS ltcount ,
+    OFFICE_ID
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE YEAR =$P{year}
+  AND MONTH  =$P{month}
+  GROUP BY OFFICE_ID
+  )act
+ON act.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT updated_by_user_id ,
+    OFFICE_ID,
+    YEAR,
+    MONTH
+  FROM PMS_DCB_TRN_MONTHLY_PR
+  WHERE beneficiary_sno IN
+    (SELECT beneficiary_sno FROM PMS_DCB_MST_BENEFICIARY WHERE status='L'
+    )
+  AND beneficiary_sno IN
+    (SELECT beneficiary_sno
+    FROM PMS_DCB_MST_BENEFICIARY_METRE
+    WHERE METER_STATUS='L'
+    )
+  AND YEAR =$P{year}
+  AND MONTH=$P{month}
+  GROUP BY office_id,
+    YEAR,
+    updated_by_user_id,
+    MONTH
+  ) u_id
+ON u_id.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT ACCOUNTING_UNIT_ID,
+    ACCOUNTING_UNIT_OFFICE_ID
+  FROM FAS_MST_ACCT_UNITS
+  )aunit
+ON aunit.ACCOUNTING_UNIT_OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT
+    CASE
+      WHEN TB_STATUS='Y'
+      THEN 'Yes'
+      ELSE '-'
+    END AS TB_STATUS ,
+    ACCOUNTING_UNIT_ID
+  FROM FAS_TRIAL_BALANCE_STATUS
+  WHERE CASHBOOK_YEAR=$P{year}
+  AND CASHBOOK_MONTH =$P{month}
+  )tb
+ON tb.ACCOUNTING_UNIT_ID=aunit.ACCOUNTING_UNIT_ID
+LEFT OUTER JOIN
+  (SELECT ROUND(SUM(TOTAL_AMT) / 100000,2) AS amt ,
+    office_id,
+    MONTH,
+    YEAR
+  FROM PMS_DCB_WC_BILLING OFFICE_ID
+  WHERE MONTH=$P{month}
+  AND YEAR   =$P{year}
+  GROUP BY office_id,
+    YEAR,
+    MONTH
+  ) wc
+ON wc.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT SUM(QTY_CONSUMED_NET) AS qty,
+    office_id,
+    MONTH,
+    YEAR
+  FROM PMS_DCB_TRN_MONTHLY_PR
+  WHERE MONTH    =$P{month}
+  AND YEAR       =$P{year}
+  AND METRE_SNO IN
+    (SELECT METRE_SNO FROM pms_dcb_mst_beneficiary_metre WHERE meter_status = 'L'
+    )
+  GROUP BY office_id,
+    YEAR,
+    MONTH
+  )pqty
+ON pqty.OFFICE_ID=off2.OFFICE_ID
+LEFT OUTER JOIN
+  (SELECT ROUND(SUM(amount)/ 100000,2) AS col ,
+    ACCOUNTING_FOR_OFFICE_ID,
+    cashbook_year,
+    cashbook_month
+  FROM FAS_RECEIPT_TRANSACTION a
+  WHERE account_head_code IN
+    (SELECT ACCOUNT_HEAD_CODE
+    FROM PMS_DCB_RECEIPT_ACCOUNT_MAP
+    WHERE COLLECTION_TYPE IN (6,7,8,9)
+    )
+  AND cashbook_month =$P{month}
+  AND cashbook_year  =$P{year}
+  AND receipt_no    IN
+    (SELECT receipt_no
+    FROM FAS_RECEIPT_MASTER b
+    WHERE SUB_LEDGER_TYPE_CODE    = 14
+    AND cashbook_month            =$P{month}
+    AND cashbook_year             =$P{year}
+    AND RECEIPT_STATUS            ='L'
+    AND a.ACCOUNTING_FOR_OFFICE_ID=b.ACCOUNTING_FOR_OFFICE_ID
+    )
+  GROUP BY ACCOUNTING_FOR_OFFICE_ID,
+    cashbook_year,
+    cashbook_month
+  )collection
+ON collection.ACCOUNTING_FOR_OFFICE_ID=off2.OFFICE_ID]]></queryString>
+
+	<field name="REG" class="java.lang.String"/>
+	<field name="DIV" class="java.lang.String"/>
+	<field name="PRVCOUNT" class="java.math.BigDecimal"/>
+	<field name="BEN1COUNT" class="java.math.BigDecimal"/>
+	<field name="BEN2COUNT" class="java.math.BigDecimal"/>
+	<field name="MET1COUNT" class="java.math.BigDecimal"/>
+	<field name="MET2COUNT" class="java.math.BigDecimal"/>
+	<field name="METFRCOUNT" class="java.math.BigDecimal"/>
+	<field name="METNFRCOUNT" class="java.math.BigDecimal"/>
+	<field name="RATECOUNT" class="java.math.BigDecimal"/>
+	<field name="RATENOTCOUNT" class="java.math.BigDecimal"/>
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="OP" class="java.math.BigDecimal"/>
+	<field name="PRC" class="java.math.BigDecimal"/>
+	<field name="PRCR" class="java.math.BigDecimal"/>
+	<field name="PRVC" class="java.math.BigDecimal"/>
+	<field name="PRFC" class="java.math.BigDecimal"/>
+	<field name="DMDC" class="java.math.BigDecimal"/>
+	<field name="metnotsetr" class="java.math.BigDecimal"/>
+	<field name="metsetdoner" class="java.math.BigDecimal"/>
+	<field name="st" class="java.lang.String"/>
+	<field name="ltcount" class="java.lang.String"/>
+	<field name="updated_by_user_id" class="java.lang.String"/>
+	<field name="TB_STATUS" class="java.lang.String"/>
+	<field name="amt" class="java.lang.String"/>
+	<field name="qty" class="java.lang.String"/>
+	<field name="col" class="java.lang.String"/>
+
+	<variable name="total" class="java.math.BigDecimal" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$F{BEN1COUNT}.add(  $F{BEN2COUNT} )]]></variableExpression>
+	</variable>
+
+		<group  name="REG" >
+			<groupExpression><![CDATA[$F{REG}]]></groupExpression>
+			<groupHeader>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="999"
+						height="18"
+						backcolor="#CCFFFF"
+						key="textField"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{REG}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="DIV" >
+			<groupExpression><![CDATA[$F{DIV}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="26"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="697"
+						y="3"
+						width="149"
+						height="20"
+						forecolor="#009999"
+						key="textField-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Times-Roman" pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="3"
+						width="970"
+						height="23"
+						forecolor="#333300"
+						backcolor="#33CCFF"
+						key="textField-2"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["  Statistical Report  -  TWAD Head Office  " + $P{monthval}+"  "+$P{year}]]></textFieldExpression>
+				</textField>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="66"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="274"
+						y="0"
+						width="29"
+						height="66"
+						key="staticText-2"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Private Master]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="301"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-3"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Local Body]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="333"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-5"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Private Beneficiary 
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="401"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-6"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Meter]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="469"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-8"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tariff Setting Freeze]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="503"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-10"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Rate Entered]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-14"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Beneficiary
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="537"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-16"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica" size="10" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Opening Balance]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="571"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-17"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total PR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="639"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-18"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PR Validation]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="673"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-19"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PR Freeze]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="707"
+						y="0"
+						width="48"
+						height="66"
+						key="staticText-20"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[DCB Journal Automated]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="605"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-21"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PR Create Status]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="435"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-23"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tariff Set]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="931"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-24"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[    Bill   Raised]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="965"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-25"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Ledger Data Upload]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="756"
+						y="0"
+						width="34"
+						height="66"
+						key="staticText-27"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[TB Freeze Status]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="218"
+						height="66"
+						backcolor="#CCCCFF"
+						key="staticText-28"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None">
+						<font pdfFontName="Helvetica-Bold" size="13" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Division]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="790"
+						y="0"
+						width="60"
+						height="49"
+						key="staticText-29"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Pumping Return Qty]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="850"
+						y="0"
+						width="42"
+						height="49"
+						key="staticText-30"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total  Demand ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="892"
+						y="0"
+						width="39"
+						height="49"
+						key="staticText-31"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total Collection ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="849"
+						y="50"
+						width="81"
+						height="16"
+						key="staticText-32"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[(Lakhs)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="790"
+						y="49"
+						width="60"
+						height="16"
+						key="staticText-33"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[(KL)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="218"
+						y="0"
+						width="56"
+						height="66"
+						backcolor="#CCCCFF"
+						key="staticText-34"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+						<font pdfFontName="Helvetica" size="10" isBold="false"/>
+					</textElement>
+				<text><![CDATA[User ID]]></text>
+				</staticText>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="0"
+						width="212"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="3" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DIV}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="275"
+						y="0"
+						width="29"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="Thin" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{PRVCOUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="303"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#0033FF"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="Thin" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{BEN1COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="335"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#009999"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="Thin" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{BEN2COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="403"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="Thin" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{MET1COUNT}.add( $F{MET2COUNT})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="470"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#006633"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="Thin" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{METFRCOUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="504"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#006600"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{RATECOUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="369"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#006699"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{total}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="536"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{OP}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="569"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{PRC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="603"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{PRCR}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="637"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{PRVC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="671"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{PRFC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="932"
+						y="0"
+						width="34"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DMDC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="437"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#009966"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{metsetdoner}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="705"
+						y="0"
+						width="48"
+						height="20"
+						forecolor="#006666"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{st}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="966"
+						y="0"
+						width="34"
+						height="20"
+						forecolor="#000000"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{ltcount}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="753"
+						y="0"
+						width="35"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{TB_STATUS}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="851"
+						y="0"
+						width="42"
+						height="20"
+						forecolor="#3333FF"
+						key="textField-3"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{amt}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="788"
+						y="0"
+						width="63"
+						height="20"
+						forecolor="#3333FF"
+						key="textField-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{qty}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="893"
+						y="0"
+						width="39"
+						height="20"
+						forecolor="#3333FF"
+						key="textField-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{col}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="212"
+						y="0"
+						width="62"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{updated_by_user_id}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

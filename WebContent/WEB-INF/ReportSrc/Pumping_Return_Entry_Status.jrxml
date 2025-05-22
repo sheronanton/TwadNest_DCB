@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Pumping_Return_Entry_Status"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<queryString><![CDATA[SELECT ben.BENEFICIARY_NAME, blk.BLOCK_NAME, btype.BEN_TYPE_DESC, DECODE(met.RC,NULL,0,met.RC) AS count1, DECODE(met2.RC,NULL,0,met2.RC) AS count2 , DECODE(met.RC-DECODE(met2.RC,NULL,0,met2.RC),NULL,0,met.RC-DECODE(met2.RC,NULL,0,met2.RC))AS missing , DECODE(pr.val,NULL,0,pr.val) AS val , DECODE(met_sett.set_count,NULL,0,met_sett.set_count) AS setflag, DECODE(rate_sett. rate_count,NULL,0,rate_sett. rate_count) AS ratecount, DECODE(vpr.not_validate,NULL,0,vpr.not_validate) AS not_validate, DECODE(prf.fr_val,NULL,0,prf.fr_val) AS fr_val FROM ( (SELECT BENEFICIARY_NAME, BENEFICIARY_TYPE_ID, OFFICE_ID , BENEFICIARY_SNO,BLOCK_SNO FROM PMS_DCB_MST_BENEFICIARY WHERE OFFICE_ID= 5099 ORDER BY BENEFICIARY_TYPE_ID )ben JOIN ( SELECT BEN_TYPE_ID, BEN_TYPE_DESC FROM PMS_DCB_BEN_TYPE )btype ON btype.BEN_TYPE_ID=ben.BENEFICIARY_TYPE_ID LEFT JOIN (SELECT COUNT(*) AS RC, BENEFICIARY_SNO,Office_id FROM PMS_DCB_MST_BENEFICIARY_METRE WHERE OFFICE_ID= Office_id GROUP BY BENEFICIARY_SNO,Office_id )met ON met.BENEFICIARY_SNO=ben.BENEFICIARY_SNO and met.Office_id=ben.OFFICE_ID LEFT JOIN (SELECT COUNT(*) AS RC, BENEFICIARY_SNO , OFFICE_ID FROM PMS_DCB_MST_BENEFICIARY_METRE WHERE METRE_SNO IN (SELECT METRE_SNO FROM PMS_DCB_TRN_MONTHLY_PR WHERE OFFICE_ID= 5099 AND MONTH = 6 AND YEAR = 2011 ) GROUP BY BENEFICIARY_SNO, OFFICE_ID )met2 ON met2.BENEFICIARY_SNO=ben.BENEFICIARY_SNO AND met2.OFFICE_ID =ben.OFFICE_ID LEFT JOIN (SELECT BENEFICIARY_SNO, COUNT(*) AS val FROM PMS_DCB_TRN_MONTHLY_PR WHERE OFFICE_ID = 5099 AND MONTH = 6 AND YEAR = 2011 AND PROCESS_FLAG='V' GROUP BY BENEFICIARY_SNO ) pr ON pr.BENEFICIARY_SNO=met2.BENEFICIARY_SNO LEFT JOIN (SELECT BENEFICIARY_SNO, COUNT(*) AS fr_val FROM PMS_DCB_TRN_MONTHLY_PR WHERE OFFICE_ID = 5099 AND MONTH = 6 AND YEAR = 2011 AND PROCESS_FLAG='FR' GROUP BY BENEFICIARY_SNO ) prf ON prf.BENEFICIARY_SNO=met2.BENEFICIARY_SNO LEFT JOIN (SELECT BENEFICIARY_SNO, COUNT(*) AS not_validate FROM PMS_DCB_TRN_MONTHLY_PR WHERE OFFICE_ID = 5099 AND MONTH = 6 AND YEAR = 2011 AND PROCESS_FLAG <>'V' AND PROCESS_FLAG ='CR' GROUP BY BENEFICIARY_SNO ) vpr ON vpr.BENEFICIARY_SNO=met2.BENEFICIARY_SNO LEFT JOIN (SELECT COUNT(*) AS set_count, BENEFICIARY_SNO FROM PMS_DCB_MST_BENEFICIARY_METRE WHERE setting_flag IS NULL GROUP BY BENEFICIARY_SNO )met_sett ON met_sett.BENEFICIARY_SNO=met.BENEFICIARY_SNO LEFT JOIN (SELECT COUNT(*) AS rate_count, BENEFICIARY_SNO FROM PMS_DCB_MST_BENEFICIARY_METRE WHERE tariff_rate IS NULL GROUP BY BENEFICIARY_SNO )rate_sett ON rate_sett.BENEFICIARY_SNO=met.BENEFICIARY_SNO left join ( select BLOCK_NAME,BLOCK_SNO from COM_MST_BLOCKS )blk on blk.BLOCK_SNO=ben.BLOCK_SNO ) ORDER BY BEN_TYPE_DESC, BENEFICIARY_NAME]]></queryString>
+
+	<field name="BENEFICIARY_NAME" class="java.lang.String"/>
+	<field name="BLOCK_NAME" class="java.lang.String"/>
+	<field name="BEN_TYPE_DESC" class="java.lang.String"/>
+	<field name="COUNT1" class="java.math.BigDecimal"/>
+	<field name="COUNT2" class="java.math.BigDecimal"/>
+	<field name="MISSING" class="java.math.BigDecimal"/>
+	<field name="VAL" class="java.math.BigDecimal"/>
+	<field name="SETFLAG" class="java.math.BigDecimal"/>
+	<field name="RATECOUNT" class="java.math.BigDecimal"/>
+	<field name="NOT_VALIDATE" class="java.math.BigDecimal"/>
+	<field name="FR_VAL" class="java.math.BigDecimal"/>
+
+	<variable name="varc" class="java.lang.Integer" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+
+		<group  name="bentype" >
+			<groupExpression><![CDATA[$F{BEN_TYPE_DESC}]]></groupExpression>
+			<groupHeader>
+			<band height="21"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="232"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BEN_TYPE_DESC}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="BENEFICIARY_NAME" >
+			<groupExpression><![CDATA[$F{BENEFICIARY_NAME}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="50"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="19"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="49"
+						y="0"
+						width="33"
+						height="19"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Sl.No]]></text>
+				</staticText>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="19"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="82"
+						y="0"
+						width="151"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BENEFICIARY_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="232"
+						y="0"
+						width="50"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COUNT1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="284"
+						y="0"
+						width="53"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{SETFLAG}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="49"
+						y="0"
+						width="33"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{varc}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="27"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

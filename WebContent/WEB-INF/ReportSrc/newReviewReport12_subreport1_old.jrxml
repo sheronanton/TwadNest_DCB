@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="newReviewReport12_subreport1_old"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="557"
+		 pageHeight="802"
+		 columnWidth="557"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="office_id" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA[$P{office_id}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="pyear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="pmonth" isForPrompting="true" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT (NET_DUE19-col10)/100000 AS arrdmd  ,
+  CASE
+    WHEN (( (col14+col15)-col10)) < 0.00
+    THEN 0
+    ELSE ROUND((( (col14+col15)-col10)) /100000 ,2)
+  END AS arrcol,
+  col14,
+  col15,
+  col10,
+  CASE
+    WHEN ROUND( ( ( col14    +col15)-col10 )/100000,2) > 0
+    THEN ( ( ROUND( (( (col14+col15)-col10)) /100000 ,2)*100 ) / ROUND ((NET_DUE19-col10)/100000,2) )
+    ELSE NULL
+  END                   AS avg1,
+  ROUND(col10/100000,2) AS curdmd,
+  CASE
+    WHEN ROUND( (col14+col15)/100000,2) > ROUND(col10/100000,2)
+    THEN ROUND(col10  /100000,2)
+    ELSE ROUND( (col14+col15)/100000,2)
+  END AS curcoll,
+  CASE
+    WHEN ( col10) !=0
+    THEN
+      CASE
+        WHEN ROUND( (col14+col15)/100000,2) > ROUND(col10/100000,2)
+        THEN 100
+        ELSE (ROUND( (col14+col15)/100000,2)*100) / ROUND (col10/100000,2)
+      END
+    ELSE NULL
+  END AS avg2
+FROM
+  (SELECT SUM(NET_DUE)          AS NET_DUE19,
+    SUM(COLN_FOR_MTH_YES_YR_WC) AS col14,
+    SUM(DMD_FOR_MTH_WC)         AS col10 ,
+    office_id
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE YEAR   =$P{pyear}
+  AND MONTH    =$P{pmonth}
+  AND office_id=$P{office_id}
+  GROUP BY office_id
+  )arr
+JOIN
+  (SELECT SUM(COLN_FOR_MTH_WC) AS col15,
+    office_id
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE YEAR   =$P{year}
+  AND MONTH    =$P{month}
+  AND office_id=$P{office_id}
+  GROUP BY office_id
+  )arrcol
+ON arrcol.office_id =arr. office_id
+ORDER BY arr.office_id]]></queryString>
+
+	<field name="ARRDMD" class="java.math.BigDecimal"/>
+	<field name="ARRCOL" class="java.math.BigDecimal"/>
+	<field name="COL14" class="java.math.BigDecimal"/>
+	<field name="COL15" class="java.math.BigDecimal"/>
+	<field name="COL10" class="java.math.BigDecimal"/>
+	<field name="AVG1" class="java.math.BigDecimal"/>
+	<field name="CURDMD" class="java.math.BigDecimal"/>
+	<field name="CURCOLL" class="java.math.BigDecimal"/>
+	<field name="AVG2" class="java.math.BigDecimal"/>
+
+	<variable name="var2" class="java.math.BigDecimal" resetType="Group" incrementType="Group" incrementGroup="off" resetGroup="off" calculation="Sum">
+		<variableExpression><![CDATA[$F{ARRCOL}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.math.BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="var1" class="java.math.BigDecimal" resetType="Group" incrementType="Group" incrementGroup="off" resetGroup="off" calculation="Sum">
+		<variableExpression><![CDATA[$F{ARRDMD}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.math.BigDecimal(0)]]></initialValueExpression>
+	</variable>
+	<variable name="var3" class="java.math.BigDecimal" resetType="Group" incrementType="Group" incrementGroup="off" resetGroup="off" calculation="Sum">
+		<variableExpression><![CDATA[$F{CURDMD}]]></variableExpression>
+	</variable>
+	<variable name="var4" class="java.math.BigDecimal" resetType="Group" incrementType="Group" incrementGroup="off" resetGroup="off" calculation="Sum">
+		<variableExpression><![CDATA[$F{CURCOLL}]]></variableExpression>
+	</variable>
+	<variable name="varsum3" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{var3}]]></variableExpression>
+	</variable>
+	<variable name="varsum4" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{var4}]]></variableExpression>
+	</variable>
+	<variable name="sumavglast" class="java.math.BigDecimal" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[($V{varsum4}.multiply( new java.math.BigDecimal(100) ))]]></variableExpression>
+	</variable>
+	<variable name="avg" class="java.math.BigDecimal" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[$V{sumavglast}.divide(  $V{varsum3},3 )]]></variableExpression>
+	</variable>
+	<variable name="secsum" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$V{var2}]]></variableExpression>
+	</variable>
+
+		<group  name="off" >
+			<groupExpression><![CDATA[$F{ARRCOL}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="208"
+						y="0"
+						width="59"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{var1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="0"
+						y="0"
+						width="208"
+						height="19"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<text><![CDATA[Grand Total]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="324"
+						y="0"
+						width="57"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="381"
+						y="0"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{varsum3}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="439"
+						y="0"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{varsum4}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="497"
+						y="0"
+						width="60"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{avg}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="267"
+						y="0"
+						width="58"
+						height="19"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{secsum}]]></textFieldExpression>
+				</textField>
+			</band>
+		</summary>
+</jasperReport>

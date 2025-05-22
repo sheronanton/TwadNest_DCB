@@ -1,0 +1,744 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="java.util.Calendar"%>
+<%@page import="java.util.*,java.sql.*"%>
+<%@page import="Servlets.PMS.PMS1.DCB.servlets.*"%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link href="../../../../../../css/txtbox.css" rel="stylesheet"	media="screen" />
+<title>Region Wise Report | TWAD Phase2</title>
+<link href="../../../../../../css/CalendarControl.css" rel="stylesheet" media="screen"/>
+<script type="text/javascript" src="../../../../../../org/Library/scripts/checkDate.js"></script>
+<script type="text/javascript" src="../../../../../../org/Library/scripts/CalendarControl.js"></script>
+<script type="text/javascript" src="../../scripts/dcbvalidation.js"></script>
+<script type="text/javascript">
+function c1()
+{
+	try {
+		document.getElementById("b1").style.color="#800517";
+		document.getElementById("b1").style.backgroundColor ="white";
+		document.getElementById("b2").style.color="yellow";
+		document.getElementById("b2").style.backgroundColor ="#C85A17";
+		setTimeout ("c2()", 1000 );
+	}catch(e) {}
+}
+	
+function month_process_view()
+{
+	try {
+			var smonth=document.getElementById("smonth").value;
+		if (smonth==0)
+		{
+			document.getElementById("master_process").style.display = 'block';
+			document.getElementById("month_process").style.display = 'none'; 
+		}else
+		{
+			document.getElementById("master_process").style.display = 'none';
+			document.getElementById("month_process").style.display = 'block';
+		}
+	}catch(e) {}
+}
+function yearload(year)
+{
+	var date=new Date();
+	var year_v1 =new Array("-select year-","2010","2011");	
+	var year_v =new Array("-select year-","2010-2011","2011-2012");
+ 	for (i=2010;i<=date.getFullYear();i++)
+	{
+		var sno=i;
+		var name =i;
+		addOption_load(document.getElementById(year),name,sno)
+	}
+}
+function addOption_load(selectbox,text,value)
+{  
+	try
+	{
+			var optn = document.createElement("OPTION");
+			optn.text = text;
+			optn.value = value;
+			if (this.src=='ob')
+			{
+				if (selectbox.id=="year")
+				{
+					 var d=new Date();
+					 var cy=d.getFullYear();
+					 var cm=d.getMonth()+1;
+					if (value==parseInt(cy))
+					{
+							if ( parseInt(cm) <=3)
+							{
+							}	
+					optn.selected=1;
+					}
+				}
+				if (selectbox.id=="month")
+				{
+					if (value=="4")
+					optn.selected=1;
+				}
+			}
+			selectbox.options.add(optn);
+	}catch(e)
+	{
+			alert("Option Creation Have Problem\n-------------------------------------")
+	}
+}
+function c2()
+{ 
+document.getElementById("b1").style.color="yellow";
+document.getElementById("b1").style.backgroundColor ="#C85A17";
+document.getElementById("b2").style.color="#800517";
+document.getElementById("b2").style.backgroundColor ="white";
+setTimeout ("c1()", 1000 );
+}
+function rld1(a)
+{
+	document.forms["myform"].submit();
+}
+function rld_new6()
+{
+	var year=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt").value;
+	if (monthchk(smonth,year)!=1)
+	{
+		window.open("../../../../../../PMS_DCB_HO_DIST_WISE?month="+smonth+"&year="+year+"&ref_sno="+(parseInt(rpt)+20));
+	}    
+}
+function rld_new5()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt5").value;
+	var rtype=document.getElementById("rtype").value;
+	if (monthchk(smonth,mon)!=1)
+	{ 
+		window.open("../../../../../../reg_menu_index?month="+smonth+"&option="+rtype+"&year="+mon+"&ref_sno="+(parseInt(rpt)+20));
+	}    
+}
+function rld_new()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt2").value;
+	var rtype=document.getElementById("rtype").value;
+	if (monthchk(smonth,mon)!=1)
+	{ 
+		window.open("../../../../../../reg_menu_index?month="+smonth+"&option="+rtype+"&year="+mon+"&ref_sno="+(parseInt(rpt)+20));
+	}    
+}
+function rld_new1()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt1").value;
+	var rtype=document.getElementById("rtype").value;
+	if (monthchk(smonth,mon)!=1)
+	{  
+		window.open("../../../../../../reg_menu_index?month="+smonth+"&option="+rtype+"&year="+mon+"&ref_sno="+(parseInt(rpt)+20));
+	}    
+}
+function rld_new2()  
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt2").value;
+	var rtype=document.getElementById("rtype").value;
+	if (monthchk(smonth,mon)!=1)
+	{  
+		window.open("../../../../../../reg_menu_index?month="+smonth+"&option="+rtype+"&year="+mon+"&ref_sno="+(parseInt(rpt)+20));
+	}    
+}
+function rld_new3()  
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt3").value;
+	var rtype=document.getElementById("rtype").value;
+	if (monthchk(smonth,mon)!=1)  
+	{    
+		window.open("../../../../../../PMS_DCB_HO_DIST_WISE?month="+smonth+"&splflag="+rtype+"&year="+mon+"&ref_sno="+(parseInt(rpt)+20));
+	}    
+}  
+function rld_new7()    
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var rpt=document.getElementById("rpt4").value;
+	var rtype=document.getElementById("rtype").value;
+	if (monthchk(smonth,mon)!=1)  
+	{   
+
+		if (rpt==116)  
+		{
+			window.open("../../../../../../reg_menu_index?month="+smonth+"&option="+rtype+"&year="+mon+"&ref_sno="+(parseInt(rpt)+20));
+		} 
+		else
+		{
+			window.open("../../../../../../Pms_Dcb_Ledger_Report?month="+smonth+"&option="+rtype+"&year="+mon+"&pr="+(parseInt(rpt)+50));
+		}
+	}     
+}  
+function monthchk(a,b)
+{
+	if (a==0 || b==0)
+	{
+		alert("Select Month and Year ");
+		return 1;
+	}else
+	{
+	return 0;
+	}
+} 
+function rld()
+{
+	var a=document.getElementById("process").value;
+	var rtype=document.getElementById("rtype").value;
+	var report=document.getElementById("report").value;
+	if (report==0)
+		report=document.getElementById("report1").value;
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	if (report==10)
+	{
+		window.open("../../../../../../ame_report?option="+rtype+"&process_code=29&pmonth="+smonth+"&pyear="+mon+"&office_id="+document.getElementById("off").value);
+	}  
+   if (report==18)    
+   {
+   	window.open("../../../../../../ame_report?pmonth="+smonth+"&pyear="+mon+"&process_code="+report+"&option="+rtype);
+   }else if (a==1)
+	{
+		if (report!=7)   
+		{
+		document.forms["myform"].submit();
+		}else
+		{
+			window.open("count_report.jsp?reg="+document.getElementById("reg").value+"&regname="+document.getElementById("reg").options[document.getElementById("reg").selectedIndex].text+"&option="+rtype);
+		}
+	}
+	else if (a==2)
+	{
+		var off_id=document.getElementById("off").value;
+				if (off_id !=0 || report==7 || report==9)
+				{		 
+								if (report==1)
+								{
+								window.open("../../../../../../BeneficiaryMetreReportPdf?command=Ben_Met&office_id="+document.getElementById("off").value);
+								}
+								else if (report==2)
+								{
+								window.open("../../../../../../OpeningBalanceReport?command=Region_Wise_Op&month="+document.getElementById("smonth").value+
+										"&year="+document.getElementById("year").value+
+										"&report_office_id="+document.getElementById("off").value);
+								}else if (report==3)
+								{
+									window.open("../../../../../../Bill_Demand?command=All_benList_RO&office_id="+document.getElementById("off").value );
+								}else if (report==6)
+								{
+									window.open("../../../../../../Bill_Demand?command=AllDiv_recpdf&fmonth="+document.getElementById("smonth").value+
+											"&fyear="+document.getElementById("year").value+
+											"&Office_id="+document.getElementById("off").value);
+								}else if (report==9)
+								{
+									window.open("../../../../../../count_report_serv?command=pdf&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value);
+								}else if (report==8)
+								{  
+									window.open("../../../../../../Bill_Demand?command=PR_SCH_WISE&fmonth="+document.getElementById("smonth").value+
+											"&fyear="+document.getElementById("year").value+
+											"&Office_id="+document.getElementById("off").value);
+								}
+								else if (report==4)
+								{
+											window.open("../../../../../../Bill_Demand?command=AllDiv_pumppdf&fmonth="+document.getElementById("smonth").value+
+											"&fyear="+document.getElementById("year").value+
+											"&Office_id="+document.getElementById("off").value);
+								}else if (report==7)
+								{
+									//var pr=prompt("Press 1)PDF ,2)XLS ","1");
+									var pr=1; 
+									//if (parseInt(pr)==1) 
+									 	window.open("../../../../../../Bill_Demand?command=record_pdf&process_code=1&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value+"&option="+rtype);
+								//	else
+									//	window.open("../../../../../../Bill_Demand?command=record_pdf&process_code=2&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value);
+								}   
+				}else     
+				{
+					alert(" Select Division ");
+				}
+	}else
+	{
+			alert("Select any one type")
+	}
+}
+function rld6()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var off_id=document.getElementById("off").value;
+	var url="./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value;
+	 //window.open("./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value,"","width=400,height=500" );
+	window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+}
+function rld7()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var off_id=document.getElementById("off").value;
+	var url="./Receipt_Troubleshoot_3.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value;
+	 //window.open("./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value,"","width=400,height=500" );
+	window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+}
+function rld8()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var off_id=document.getElementById("off").value;
+	var url="./Receipt_Troubleshoot_4.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value;
+	 //window.open("./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value,"","width=400,height=500" );
+	window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+}
+function new_reports()  
+{ 
+	var mon=document.getElementById("year").value; 
+	 var smonth=document.getElementById("smonth").value;
+	window.open("../../../../../../Bill_Demand?command=newrecord_pdf&process_code=1&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value);
+}
+function rld9()
+{
+	var mon=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var off_id=document.getElementById("off").value;
+	var url="../../../../../../Pms_Dcb_Ledger_Report?pr=5";
+	 //window.open("./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value,"","width=400,height=500" );
+	window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+}
+function rld10() 
+{
+	var year=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+	var option=document.getElementById("rtype").value;    
+	var date=document.getElementById("date").value;
+	var url="../../../../../../Pms_Dcb_Ledger_Report?cdate="+date+"&pr=7&option="+option+"&month="+smonth+"&year="+year;
+	 //window.open("./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value,"","width=400,height=500" );
+	//window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+	window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+}  
+function rld11()  
+{
+	var year=document.getElementById("year").value; 
+	var smonth=document.getElementById("smonth").value;
+ 	var url="../../../../../../Pms_Dcb_Ledger_Report?pr=10&option=1&month="+smonth+"&year="+year;
+	 //window.open("./Receipt_Troubleshoot_1.jsp?office_id="+document.getElementById("off").value+"&fmonth="+document.getElementById("smonth").value+"&fyear="+document.getElementById("year").value,"","width=400,height=500" );
+	window.open(url,'','toolbar=0,titlebar=0,fullscreen=1,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=800,height=600,left = 82,top = 54','');
+} 
+</script>
+</head>  
+<body onload="c1(),month_process_view()">
+<form action="allben_with_met.jsp" method="get" name="myform">
+<table  width="75%" align="center" border="1" cellspacing="0" cellpadding="10" style="BORDER-COLLAPSE: collapse"
+	border="1" borderColor="#92c2d8">
+	<Tr bgcolor="skyblue">
+	<td colspan="3" align="center" ><font color="#003300"><b>MIS</b></font> </td></tr>
+	<% 
+	System.out.println("TEST"); 
+	String new_cond=Controller.new_cond;
+	Controller obj = new Controller();
+	Calendar cal = Calendar.getInstance();
+	int pr=Integer.parseInt( obj.setValue("process",request));
+	int report=Integer.parseInt( obj.setValue("report",request));
+	int day = cal.get(Calendar.DATE);
+	int month = cal.get(Calendar.MONTH) + 1;
+	int year = cal.get(Calendar.YEAR);
+	String reg= obj.setValue("reg",request);
+	String off_id= obj.setValue("off",request);
+	String userid="0",Office_id="",Office_Name="";
+	String Date_dis=day+"/"+month+"/"+year;
+     Connection con=obj.con();
+	 obj.createStatement(con);
+	try {
+		String qry = "  select " + " REGION_OFFICE_ID, "
+				+ " OFFICE_LEVEL_ID, " + " OFFICE_ID, "
+				+ " OFFICE_NAME " + " from  "
+				+ " COM_MST_ALL_OFFICES_VIEW " + " where  "
+				+ " OFFICE_LEVEL_ID='RN' order by OFFICE_ID ";
+		PreparedStatement ps = con.prepareStatement(qry);
+		ResultSet rs_sub1=ps.executeQuery();;
+		String combo1="<select name='reg' id='reg' class='select' onchange='rld1(this.value)' ><option value=0>Select</option>";
+		String reg_id="",selc1="";
+		while (rs_sub1.next())  
+		{
+			reg_id=rs_sub1.getString("OFFICE_ID");
+			if (Integer.parseInt(reg_id)==Integer.parseInt(reg))
+				selc1="selected";
+			else
+				selc1="";
+			System.out.println(selc1);
+			combo1+=" <option value='"+rs_sub1.getString("OFFICE_ID")+"' "+selc1+">"+rs_sub1.getString("OFFICE_NAME")+"</option>";		
+		}
+	   ps.close();
+	   rs_sub1.close();
+		combo1+="</select>";
+			qry = "  select  REGION_OFFICE_ID,OFFICE_LEVEL_ID,OFFICE_ID,OFFICE_NAME from  "
+					+ " COM_MST_ALL_OFFICES_VIEW where OFFICE_LEVEL_ID='DN' and  REGION_OFFICE_ID="
+					+ reg +" and OFFICE_ID  in ( select OFFICE_ID from PMS_DCB_DIV_DIST_MAP) order by OFFICE_ID";
+			PreparedStatement ps_sub2 = con.prepareStatement(qry);
+			ResultSet rs_sub2 = ps_sub2.executeQuery();
+			String combo2="<select name='off' id='off' class='select' ><option value=0>Select</option>";
+			String off_id2="";
+			selc1="";
+			while (rs_sub2.next())  
+			{
+				off_id2=rs_sub2.getString("OFFICE_ID");
+				if (Integer.parseInt(off_id2)==Integer.parseInt(off_id))
+					selc1="selected";
+				else
+					selc1="";
+				System.out.println(selc1);
+				combo2+=" <option value='"+off_id2+"' "+selc1+">"+rs_sub2.getString("OFFICE_NAME")+"</option>";		
+			}
+		combo2+="</select>";
+		ps_sub2.close();
+		rs_sub2.close();  
+	 	String[] monthArrv = { "0","1", "2", "3", "4", "5", "6","7", "8", "9", "10", "11", "12" };
+		String []monthArr ={"-select month-","January","February","March","April","May","June","July","August","September","October","November","December"};
+				String prallow=obj.setValue("prallow",request);
+				String mnth=obj.setValue("smonth",request);
+				String syear=obj.setValue("year",request);
+				String prset=obj.setValue("prset",request);
+				if (prallow.equalsIgnoreCase("Submit") && !off_id.equalsIgnoreCase("0")   )
+				{
+					if (!mnth.equalsIgnoreCase("0") && !syear.equalsIgnoreCase("0")   )
+					{
+						 qry="";
+						 qry="update PMS_DCB_SETTING set PR_ENABLE='"+prset+"' where YEAR="+syear+" and MONTH="+mnth+" and OFFICE_ID="+off_id;
+						try
+						{
+							int res=obj.setUpd(qry);
+							if (res >0)
+							{
+							%>
+						<script>
+							alert ("Authorized Done");
+						</script>
+							<%
+							}
+						}catch(Exception e) {}
+						prallow="";  
+						mnth="";
+						syear="";
+						prset="";
+					}
+				}
+	 	String cb=obj.combo_str("PMS_DCB_MIS_REPORT_TITLE","REPORT_HEADING","REPORT_REF"," where REPORT_SNO between 2 and 6 order by REPORT_REF","rpt","","class=select style='width:250px' ");
+		%>
+				<tr><td style="width: 326px"><label class="lbl">Month and Year </label> </td>
+				<td  style="width: 426px">
+				 <select class="select" id="smonth" name="smonth" onchange="month_process_view()" style="width: 110pt;"  >
+				<option value="0">-Select Month-</option>
+				 	<%  for (int j = 1; j <=12  ; j++) {
+						%>
+						<option value="<%=monthArrv[j]%>"><%=monthArr[j]%></option>
+					<% }  %>
+				</select>
+				        <select class="select" id="year" name="year" style="width: 110pt;"  >
+				        <option value="0">Select Year</option>			 
+					<% 	for (int i = year-1; i <=year; i++) { 
+													%>
+						<option value="<%=i%>"> <%=i%></option>
+					<% 	} %>     
+					</select>
+				         </td> </tr> 
+			<tr>
+				<td><label class="lbl"> Net Due Report Abstract&nbsp;&nbsp;(Rs.In Lakhs) </label>  </td>
+				<td>  
+						<select id="rpt4" name="rpt4" class='select'>
+				 			 <option value="0">Select</option>   				   
+			<% /*				    <!- <option value="0">-----------------------In Crores-------------------</option>-->
+							<!- <option value="1">Corporation  </option> -->						
+							<!- <option value="2">Municipalities</option>-->
+							<!- <option value="3">Rural Town Panchayat</option>-->
+							<!- <option value="4">Urban Town Panchayat</option> -->
+							<!- <option value="5">Village Panchayat</option>	-->
+	*/%>
+							<option value="116">Abstract Of Water Charges Due</option>
+							<option value="101">Corporation </option>							
+							<option value="102">Municipalities </option>
+							<option value="103">Rural Town Panchayat </option>
+							<option value="104">Urban Town Panchayat</option> 
+							<option value="105">Village Panchayat </option>							
+			<% /*			<!- <option value="0">----------------------Actual--------------------------</option>-->
+							<!- <option value="201">Corporation </option>		-->					
+							<!-<option value="202">Municipalities </option>-->
+							<!-<option value="203">Rural Town Panchayat </option>-->
+							<!-<option value="204">Urban Town Panchayat </option>--> 
+							<!-<option value="205">Village Panchayat </option> -->	
+							<option value="206">Corporation Abstract(Three Column)</option>
+						 	<option value="207">Corporation Details(Three Column)</option>
+			*/%>
+						</select>  
+			</td> 
+			<td>
+						<input  class="fb2"  type="button" value="Print" onclick="rld_new7()" id="b1" >
+			</td>
+			</tr>
+			<tr>
+				<td><label class="lbl"> Net Due Report Details&nbsp;&nbsp;(Rs.In Lakhs)</label>  </td>
+				<td> 
+						<select id="rpt1" name="rpt1" class='select'>
+						    <option value="0">Select</option>
+						    <%/*<option value="115">Abstract Of Water Charges Due (Crores)</option>*/ %> 
+						 
+						    <%/*<option value="117">Abstract Of Water Charges Due (Actual)</option>*/ %> 
+						  <% /*  <option value="0">---------------In Crores--------  </option>
+							<option value="1">Corporation  </option>
+							<option value="2">Municipalities</option>
+							<option value="3">Rural Town Panchayat</option>
+							<option value="4">Urban Town Panchayat</option> 
+							<option value="5">Village Panchayat</option>
+							<option value="86">Village Panchayat (Block and Ben Wise) </option>
+						  */%>
+							<option value="11">Corporation </option>
+							<option value="12">Municipalities </option>
+							<option value="13">Rural Town Panchayat </option>
+							<option value="14">Urban Town Panchayat</option> 
+							<option value="15">Village Panchayat (Block Wise)</option>
+							<option value="186">Village Panchayat (Block and Ben Wise) </option>
+							<%
+							/*<option value="0">------------Actual-----------</option>
+							<option value="21">Corporation </option>
+							<option value="22">Municipalities </option>
+							<option value="23">Rural Town Panchayat </option>
+							<option value="24">Urban Town Panchayat </option> 
+							<option value="25">Village Panchayat </option>	
+							<option value="286">Village Panchayat (Block and Ben Wise) </option>
+						   */%>
+							<%/*<option value="26">All Type -- ( Excluding VP - Cr)   </option> */ %> 
+							<option value="27">All Type -- ( Excluding VP - Lacs)</option>
+							<%/*<option value="28">All Type -- ( Excluding VP -Actual)</option> */ %>
+					 		<%/*<option value="0">-------------------------------------------</option> */ %>
+						</select>
+			</td>
+			<td>
+						<input  class="fb2"  type="button" value="Print" onclick="rld_new1()" id="b1" >
+			</td>
+			</tr>
+			<tr>
+				<td align="left"><label class="lbl">Beneficiary Type - District Wise Abstract&nbsp;&nbsp;(Rs.In Lakhs)</label> </td>
+				<td>
+						<select id="rpt2" name="rpt2" class='select'>
+							<option value="0">Select</option>
+							<%/*<option value="0">-----------------------In Crores-------------------</option>
+							<option value="41">Corporation   </option>
+							<option value="42">Municipalities   </option>
+							<option value="43">Rural Town Panchayat    </option>
+							<option value="44">Urban Town Panchayat   </option> 
+							<option value="45">Village Panchayat    </option>*/%>	  		
+							<option value="31">Corporation  </option>
+							<option value="32">Municipalities </option>
+							<option value="33">Rural Town Panchayat </option>
+							<option value="34">Urban Town Panchayat </option> 
+							<option value="35">Village Panchayat </option>
+							<%
+							/*<option value="0">----------------------Actual--------------------------</option>
+							<option value="51">Corporation </option>
+							<option value="52">Municipalities </option>
+							<option value="53">Rural Town Panchayat </option>
+							<option value="54">Urban Town Panchayat </option> 
+							<option value="55">Village Panchayat </option>	  
+						 */%>	
+						</select></td><td> <input  class="fb2"  type="button" value="Print" onclick="rld_new2()" id="b1" >
+				</td>
+			</tr>
+			<tr>
+				<td align="left"><label class="lbl">Beneficiary Type - District Wise Details&nbsp;&nbsp;(Rs.In Lakhs)</label></td>
+				<td>
+						<select id="rpt3" name="rpt3" class='select'>
+						  <option value="0">Select</option>
+						    <%/*<option value="115">Abstract Of Water Charges Due (Crores)</option>*/ %> 
+						    <option value="116">Abstract Of Water Charges Due</option>
+						    <%/*<option value="117">Abstract Of Water Charges Due ( Actual )</option>*/ %> 
+							<%/*<option value="0">-----------------------In Crores-------------------</option>
+							<option value="1">Corporation  </option>
+							<option value="2">Municipalities</option>
+							<option value="3">Rural Town Panchayat</option>
+							<option value="4">Urban Town Panchayat</option> 
+							<option value="5">Village Panchayat-Block Wise</option>*/ %>
+							<option value="11">Corporation </option>
+							<option value="12">Municipalities </option>
+							<option value="13">Rural Town Panchayat </option>
+							<option value="14">Urban Town Panchayat</option> 
+							<option value="15">Village Panchayat-Block Wise </option>
+							<%/*<option value="0">----------------------Actual--------------------------</option>
+							<option value="21">Corporation  </option>
+							<option value="22">Municipalities </option>
+							<option value="23">Rural Town Panchayat </option>
+							<option value="24">Urban Town Panchayat </option> 
+							<option value="25">Village Panchayat-Block Wise </option>		*/ %>		
+						</select>
+						</td>
+						<td><input  class="fb2"  type="button" value="Print" onclick="rld_new3()" id="b1" >
+						</td>   
+						</tr>  
+			<tr>
+				<td align="left"> <label class="lbl">DCB Statement</label>				 		 		
+				</td>
+				<Td>
+				<select id="rpt5" name="rpt5" class='select'>
+						<option value="0">Select  </option>
+							<option value="120">  Abstract </option>
+							<option value="121">  Detail </option>  
+				</select></Td>
+				<td><input  class="fb2"  type="button" value="Print" onclick="rld_new5()" id="b1" >
+				</Td>
+			</tr>
+				<tr>
+				<td align="left"> <label class="lbl">Scheme Wise Collection  </label>				 		 		
+				</td>
+				<Td colspan="2"> 
+				 <input  class="fb2"  type="button" value="Print" onclick="rld11()" id="b1" >
+				</Td>
+			</tr>
+			<%	   
+				if (pr==1) 
+				{
+			%>
+			<tr>
+					<td colspan="2">
+						<table class="fb2"   id="" width=100% align="center" border="0" cellspacing="0" cellpadding="3" style="BORDER-COLLAPSE: collapse" border="1" borderColor="#92c2d8">
+							<%
+								qry = "  select  BENEFICIARY_SNO, BENEFICIARY_NAME, BENEFICIARY_TYPE_ID,  "
+										+ " DISTRICT_CODE, " + " OFFICE_ID , "
+										+ " BLOCK_SNO, " + " OFFICE_ADDRESS1, "
+										+ " OFFICE_ADDRESS2, " + " OFFICE_ADDRESS3 , "
+										+ " BILLING_ADDRESS1, " + " BILLING_ADDRESS2, "
+										+ " BILLING_ADDRESS3, " + " BILLING_PIN_CODE "
+										+ " from "
+										+ " PMS_DCB_MST_BENEFICIARY where "+new_cond+"  OFFICE_ID ="
+										+ off_id
+										+ " order by BENEFICIARY_TYPE_ID,BENEFICIARY_NAME ";
+							%>
+					<table id="" width=100% align="center" 		border="1" cellspacing="0" cellpadding="3" 		style="BORDER-COLLAPSE: collapse" border="1" borderColor="#92c2d8">
+					<%
+							PreparedStatement ps1 = con.prepareStatement(qry);
+							ResultSet rs2 = ps1.executeQuery();
+							while (rs2.next()) { 
+					%>
+					<tr>
+						<td class="tdText" width=55%><font color="#800080"  style="font-size: 3.5mm;" ><b><%=rs2.getString("BENEFICIARY_NAME")%></b></font></td>
+						<td  class="tdText" width=15%><font color="#234534" size=1><b>
+							<%=obj.getValue("PMS_DCB_BEN_TYPE","BEN_TYPE_DESC"," where BEN_TYPE_ID="+ rs2.getString("BENEFICIARY_TYPE_ID"))%>
+						</b></font></td>
+							<%
+							int  c=obj.getCount("PMS_DCB_MST_BENEFICIARY_METRE","where BENEFICIARY_SNO ="+ rs2.getString("BENEFICIARY_SNO"));
+							if (c==0)
+							{
+							%>
+							<Td ><font color="#ff0000" size=1>Meter Not Entered </font> </Td>
+							<%
+							}
+							else
+							{%>
+							<Td ><font color="#234534" size=1>Total Meter :  <%=c%> </font> </Td>
+							<%}
+							if (c!=0)
+							{
+							%>
+							</tr>	
+								 <Tr>
+								 <td colspan="3">
+									<%
+										qry = "  select  "
+																+ " METRE_LOCATION, "
+																+ " METRE_INIT_READING ,"
+																+ " MULTIPLY_FACTOR,"	
+																+ " decode(METRE_WORKING,'y','Yes','Y','Yes','n','No','N','No') AS METRE_WORKING,"  
+																+ " decode(PARENT_METRE,'y','Yes','Y','Yes','n','No','N','No') AS PARENT_METRE,"
+																+ " decode(METRE_FIXED,'y','Yes','Y','Yes','n','No','N','No') AS METRE_FIXED,"
+																+ " decode(METRE_TYPE,1,'KL',2,'ML') AS METRE_TYPE,"
+																+ " decode(TARIFF_FLAG,'S','Scheme','L','Location') AS TARIFF_FLAG,"
+							 									+ " SCHEME_SNO,SCH_TYPE_ID ,METRE_INIT_READING"
+																+ " from "
+																+ " PMS_DCB_MST_BENEFICIARY_METRE where BENEFICIARY_SNO ="
+																+ rs2.getString("BENEFICIARY_SNO") + ""
+																+ " order by BENEFICIARY_TYPE_ID ";
+									%> 
+							<table   width=100% align="center" border="1" cellspacing="0" cellpadding="3" style="BORDER-COLLAPSE: collapse" border="1" borderColor="#12c2d8" >
+							 <TR bgcolor="#99CDFF">
+							 	<td width="25%"  align="center"><font   style="font-size: 2.9mm;" >Location</font></td>
+							 	<td width="30%"  align="center"><font   style="font-size: 2.9mm;" >Scheme Name</font></td>
+							 	<td width="10%"  align="center"><font   style="font-size: 2.9mm;" >Scheme Type</font></td>
+							 	<td width="4%"  align="center"><font   style="font-size: 2.9mm;" >Fixed</font></td>
+							 	<td width="4%"  align="center"><font   style="font-size: 2.9mm;" >Working</font></td>
+							 	<td width="5%"  align="center"><font   style="font-size: 2.9mm;" >Factor</font></td>
+							 	<td width="5%"  align="center"><font   style="font-size: 2.9mm;" >Initial</font></td>
+							 	<td width="5%"  align="center"><font   style="font-size: 2.9mm;" >M.Type</font></td>
+							 	<td width="5%"  align="center"><font   style="font-size: 2.9mm;" >Parent</font></td>
+							 	<td width="5%"  align="center"><font   style="font-size: 2.9mm;" >Tariff</font></td>
+							 </TR>
+			<%
+					PreparedStatement ps_met = con.prepareStatement(qry);
+					ResultSet rs2__met = ps_met.executeQuery();
+					while (rs2__met.next()) 
+					{
+					%>
+					<tr>
+						<td class="tdText" align="left"><font color="#006666" size=1><b> <%=rs2__met.getString("METRE_LOCATION")%></b></font></td>
+						<td class="tdText" align="left">
+							<font color="#006666" size=1><b><%=obj.getValue("PMS_SCH_MASTER","SCH_NAME"," where SCH_SNO="+ rs2__met.getString("SCHEME_SNO"))%></b></font>
+						</td>
+						<td class="tdText">
+							<font color="#006666" size=1><b><%=obj.getValue("PMS_SCH_LKP_TYPE","SCH_TYPE_DESC"," where SCH_TYPE_ID="+ rs2__met.getString("SCH_TYPE_ID"))%> </b></font>
+						</td>
+						<td class="tdText" align="center"><font color="#006666	" size=1><b> <%=rs2__met.getString("METRE_FIXED")%></b></font></td>
+						<td class="tdText" align="center"><font color="#006666	" size=1><b> <%=rs2__met.getString("METRE_WORKING")%></b></font></td>
+						<td class="tdText" align="right"><font color="#006666	" size=1><b> <%=rs2__met.getString("MULTIPLY_FACTOR")%></b></font></td>
+						<td class="tdText" align="right"><font color="#006666	" size=1><b> <%=rs2__met.getString("METRE_INIT_READING")%></b></font></td>
+						<td class="tdText" align="center"><font color="#006666	" size=1><b> <%=rs2__met.getString("METRE_TYPE")%></b></font></td>
+						<td class="tdText" align="center"><font color="#006666	" size=1><b> <%=rs2__met.getString("PARENT_METRE")%></b></font></td>
+						<td class="tdText" align="center"><font color="#006666	" size=1><b> <%=rs2__met.getString("TARIFF_FLAG")%></b></font></td>
+					</tr>
+					<%
+					} // res2_met close 
+				rs2__met.close();
+					ps_met.close();
+					%>
+			</table>
+				<%
+			}else
+			{
+			}
+			// count of meter close here 
+		}
+	rs2.close();	
+	ps1.close();
+%>
+	</td>
+	</Tr>
+	<% } %>
+	<tr> 
+     	<td colspan="3" align="right">  
+       	<select id="rtype" name="rtype" style="width: 110pt;">
+       						<option value="0">  Report View Type</option>
+       						<option value="1" selected="selected">PDF </option>  
+							<option value="2" >  Excel </option>							
+							<option value="3">  HTML </option>  
+		</select></td>     		
+     </tr>
+	<tr>    
+	<td colspan=3 align="center"><input type=button value="Exit" onclick="self.close()"></td></tr>	
+	</table> 
+		<%
+			} catch (Exception e) {  
+				out.println(e);
+			}
+		%>
+		<% 
+		con.close();
+		%>
+</table></td></tr></table> 
+<input type=hidden id="process" value="2"> 
+</form>
+</body>
+</html>

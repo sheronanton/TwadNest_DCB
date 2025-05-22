@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+
+
+<struts>
+<constant name="struts.devMode" value="true" />
+<package name="default11111111" extends="struts-default" namespace="/">
+<action name="userImage" class="Servlets.HR.HR1.EmployeeMaster.servlets.ImageUploadAction">
+<interceptor-ref name="fileUpload">
+<param name="maximumSize">2097152</param>
+<param name="allowedTypes">
+image/png,image/gif,image/jpeg,image/pjpeg
+</param>
+</interceptor-ref>
+<interceptor-ref name="defaultStack"></interceptor-ref>
+<result name="success">/org/HR/HR1/EmployeeMaster/jsps/ImageUploadSuccess.jsp?message=fail</result>
+<result name="input">/org/HR/HR1/EmployeeMaster/jsps/MessengerOkBack_photo.jsp?message=Photo File Uploaded</result>
+<result name="filetype">/org/HR/HR1/EmployeeMaster/jsps/ImageUploadSuccess.jsp?message=checking</result>
+</action>
+</package>
+
+  
+
+
+<package name="ddddefault" extends="struts-default" namespace="/">
+
+<action name="userImages2" class="Servlets.HR.HR1.EmployeeMaster.servlets.UpdateImageUploadAction">
+<interceptor-ref name="fileUpload">
+<param name="maximumSize">2097152</param>
+<param name="allowedTypes">
+image/png,image/gif,image/jpeg,image/pjpeg
+</param>
+</interceptor-ref>
+<interceptor-ref name="defaultStack"></interceptor-ref>
+<result name="success">/org/HR/HR1/EmployeeMaster/jsps/ImageUploadSuccess.jsp?message=fail</result>
+<result name="input">/org/HR/HR1/EmployeeMaster/jsps/MessengerOkBack_photo.jsp?message=Photo File Uploaded</result>
+<result name="filetype">/org/HR/HR1/EmployeeMaster/jsps/ImageUploadSuccess.jsp?message=checking</result>
+</action>
+
+</package>
+</struts>

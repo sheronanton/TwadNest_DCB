@@ -1,0 +1,92 @@
+.table
+{
+        background-color: rgb(247,247,247);
+        
+}
+
+.tdH
+{
+     background-color: rgb(181,195,246);
+     font-family: Arial;
+     
+   
+}
+
+.disab
+{
+    background-color: rgb(231,231,231);
+}
+.tdTitle
+{
+    background-color: rgb(181,195,246);
+}
+
+.tdB
+{
+    background-color: rgb(220,223,251);
+}
+
+
+
+.tab 
+{
+	border:1px solid green;
+	border-collapse:collapse;
+	border-color: skyblue; 
+	
+}
+.fnt
+{
+	font-family: arial;
+	font-size: 11;
+}
+
+.tb2 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 70px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:blue;
+    font-weight: bold;
+    text-align: right;
+}
+.tb0 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 30px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:black;
+    font-weight: bold;
+}
+ 
+.tb4 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 330px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:black;
+    font-weight: bold;
+} 
+.tb5 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 283px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:blue;
+    font-weight: bold;
+}
+
+.pmscombo
+{
+	font-family: sans-serif;
+    font-size: 9pt; 
+}
+.fnt
+{
+	font-family: sans-serif;
+    font-size: 10pt; 
+}

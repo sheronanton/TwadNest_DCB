@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="Division_wise_OB"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="1018"
+		 pageHeight="842"
+		 columnWidth="930"
+		 columnSpacing="0"
+		 leftMargin="58"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="apryear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="mvalue" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.Integer"/>
+	<queryString><![CDATA[SELECT OFFICE_NAME,
+  SUM(OB_MAINT_CHARGES)            AS OB_MAINT_CHARGES,
+  SUM(OB_CUR_YR_WC)                AS OB_CUR_YR_WC,
+  SUM(OB_YESTER_YR_WC)             AS OB_YESTER_YR_WC,
+  SUM(DMD_UPTO_PRV_MTH_WC)         AS DMD_UPTO_PRV_MTH_WC,
+  SUM(COLN_UPTO_PRV_MTH_MAINT)     AS COLN_UPTO_PRV_MTH_MAINT,
+  SUM(COLN_UPTO_PRV_MTH_YESTER_YR) AS COLN_UPTO_PRV_MTH_YESTER_YR,
+  SUM(COLN_UPTO_PRV_MTH_WC)        AS COLN_UPTO_PRV_MTH_WC,
+  SUM(OB_FOR_MTH_MAINT_CHARGES)    AS OB_FOR_MTH_MAINT_CHARGES,
+  SUM(OB_FOR_MTH_CUR_YR_WC)        AS OB_FOR_MTH_CUR_YR_WC,
+  SUM(OB_FOR_MTH_YESTER_YR_WC)     AS OB_FOR_MTH_YESTER_YR_WC,
+  SUM(apr_CUR_YR_WC) AS apr_CUR_YR_WC,
+  SUM(opcurrent)                   AS opcurrent 
+FROM
+  (SELECT BENEFICIARY_NAME,
+    b.BENEFICIARY_SNO,
+    OFFICE_NAME,
+    SCH_NAME,
+    BEN_TYPE_DESC,
+    OFFICE_ID,
+    DECODE(BLk.BLOCK_NAME,NULL,'',BLk.BLOCK_NAME)                                                                                                                                                                          AS BLOCK_NAME,
+    DECODE(OB_MAINT_CHARGES,NULL,0,OB_MAINT_CHARGES)                                                                                                                                                                       AS OB_MAINT_CHARGES,
+    DECODE(OB_CUR_YR_WC,NULL,0,OB_CUR_YR_WC)                                                                                                                                                                               AS OB_CUR_YR_WC,
+    DECODE(OB_YESTER_YR_WC,NULL,0,OB_YESTER_YR_WC)                                                                                                                                                                         AS OB_YESTER_YR_WC,
+    DECODE(DMD_UPTO_PRV_MTH_WC,NULL,0,DMD_UPTO_PRV_MTH_WC)                                                                                                                                                                 AS DMD_UPTO_PRV_MTH_WC,
+    DECODE(COLN_UPTO_PRV_MTH_MAINT,NULL,0,COLN_UPTO_PRV_MTH_MAINT)                                                                                                                                                         AS COLN_UPTO_PRV_MTH_MAINT,
+    DECODE(COLN_UPTO_PRV_MTH_YESTER_YR,NULL,0,COLN_UPTO_PRV_MTH_YESTER_YR)                                                                                                                                                 AS COLN_UPTO_PRV_MTH_YESTER_YR,
+    DECODE(COLN_UPTO_PRV_MTH_WC,NULL,0,COLN_UPTO_PRV_MTH_WC)                                                                                                                                                               AS COLN_UPTO_PRV_MTH_WC ,
+    DECODE(OB_FOR_MTH_MAINT_CHARGES,NULL,0,OB_FOR_MTH_MAINT_CHARGES)                                                                                                                                                       AS OB_FOR_MTH_MAINT_CHARGES ,
+    DECODE(OB_FOR_MTH_CUR_YR_WC,NULL,0,OB_FOR_MTH_CUR_YR_WC)                                                                                                                                                               AS OB_FOR_MTH_CUR_YR_WC ,
+    DECODE(OB_FOR_MTH_YESTER_YR_WC,NULL,0,OB_FOR_MTH_YESTER_YR_WC)                                                                                                                                                         AS OB_FOR_MTH_YESTER_YR_WC,
+    DECODE(apr.apr_CUR_YR_WC,NULL,0,apr.apr_CUR_YR_WC)                                                                                                                                                                     AS apr_CUR_YR_WC ,
+    DECODE ( ( ( apr.apr_CUR_YR_WC +DMD_UPTO_PRV_MTH_WC)- (COLN_UPTO_PRV_MTH_WC+COLN_UPTO_PRV_MTH_YESTER_YR) ) ,NULL,0, ( ( apr.apr_CUR_YR_WC +DMD_UPTO_PRV_MTH_WC)- (COLN_UPTO_PRV_MTH_WC+COLN_UPTO_PRV_MTH_YESTER_YR) )) AS opcurrent
+  FROM
+    (SELECT BENEFICIARY_OB_SNO,
+      BENEFICIARY_SNO,
+      FIN_YEAR,
+      MONTH,
+      OFFICE_ID,
+      SCH_SNO,
+      AS_ON_DATE,
+      OB_MAINT_CHARGES,
+      OB_CUR_YR_WC,
+      OB_YESTER_YR_WC,
+      DMD_UPTO_PRV_MTH_WC,
+      COLN_UPTO_PRV_MTH_MAINT,
+      COLN_UPTO_PRV_MTH_YESTER_YR,
+      COLN_UPTO_PRV_MTH_WC,
+      OB_FOR_MTH_MAINT_CHARGES,
+      OB_FOR_MTH_CUR_YR_WC,
+      OB_FOR_MTH_YESTER_YR_WC
+    FROM PMS_DCB_OB_YEARLY
+    WHERE BENEFICIARY_SNO IN
+      (SELECT BENEFICIARY_SNO FROM PMS_DCB_MST_BENEFICIARY WHERE status ='L'
+      )
+    AND FIN_YEAR=$P{year}
+    AND MONTH   =$P{month}
+    )a
+  JOIN
+    (SELECT SUM(OB_CUR_YR_WC)+ SUM( OB_YESTER_YR_WC) AS apr_CUR_YR_WC ,
+      BENEFICIARY_SNO,
+      FIN_YEAR,
+      MONTH,
+      sch_sno,
+      OFFICE_ID
+    FROM PMS_DCB_OB_YEARLY
+    WHERE BENEFICIARY_SNO IN
+      (SELECT BENEFICIARY_SNO FROM PMS_DCB_MST_BENEFICIARY
+      )
+    AND FIN_YEAR=$P{apryear}
+    AND MONTH   =4    
+    GROUP BY OFFICE_ID,
+      FIN_YEAR,
+      MONTH,
+      beneficiary_sno,
+      sch_sno
+    )apr
+  ON apr.BENEFICIARY_SNO=a.BENEFICIARY_SNO
+  AND apr.sch_sno       =a.sch_sno
+  AND apr.OFFICE_ID     =a.OFFICE_ID
+  JOIN
+    (SELECT BENEFICIARY_SNO,
+      BLOCK_SNO,
+      BENEFICIARY_NAME,
+      BENEFICIARY_TYPE_ID,
+      OFFICE_ID
+    FROM PMS_DCB_MST_BENEFICIARY
+    WHERE status='L'
+    )b
+  ON a.BENEFICIARY_SNO=b.BENEFICIARY_SNO
+  AND a.OFFICE_ID     =b.OFFICE_ID
+  JOIN
+    ( SELECT OFFICE_ID, OFFICE_NAME FROM COM_MST_OFFICES
+    )c
+  ON a.OFFICE_ID=c.OFFICE_ID
+  JOIN
+    ( SELECT SCH_SNO, SCH_NAME FROM PMS_SCH_MASTER
+    )d
+  ON a.SCH_SNO=d.SCH_SNO
+  JOIN
+    (SELECT BEN_TYPE_DESC,
+      BEN_TYPE_ID,
+      ADDRESS_TO
+    FROM PMS_DCB_BEN_TYPE
+    ORDER BY BEN_TYPE_ID
+    ) T
+  ON T.BEN_TYPE_ID=b.BENEFICIARY_TYPE_ID
+  LEFT JOIN
+    ( SELECT BLOCK_SNO, BLOCK_NAME FROM COM_MST_BLOCKS
+    )Blk
+  ON blk.block_sno=b.BLOCK_SNO
+  ORDER BY BEN_TYPE_ID,
+    BLOCK_NAME,
+    BENEFICIARY_NAME
+  )
+  group by OFFICE_ID,OFFICE_name 
+order by OFFICE_ID]]></queryString>
+
+	<field name="OFFICE_NAME" class="java.lang.String"/>
+	<field name="OB_MAINT_CHARGES" class="java.math.BigDecimal"/>
+	<field name="OB_CUR_YR_WC" class="java.math.BigDecimal"/>
+	<field name="OB_YESTER_YR_WC" class="java.math.BigDecimal"/>
+	<field name="DMD_UPTO_PRV_MTH_WC" class="java.math.BigDecimal"/>
+	<field name="COLN_UPTO_PRV_MTH_MAINT" class="java.math.BigDecimal"/>
+	<field name="COLN_UPTO_PRV_MTH_YESTER_YR" class="java.math.BigDecimal"/>
+	<field name="COLN_UPTO_PRV_MTH_WC" class="java.math.BigDecimal"/>
+	<field name="OB_FOR_MTH_MAINT_CHARGES" class="java.math.BigDecimal"/>
+	<field name="OB_FOR_MTH_CUR_YR_WC" class="java.math.BigDecimal"/>
+	<field name="OB_FOR_MTH_YESTER_YR_WC" class="java.math.BigDecimal"/>
+	<field name="APR_CUR_YR_WC" class="java.math.BigDecimal"/>
+	<field name="OPCURRENT" class="java.math.BigDecimal"/>
+
+	<variable name="sum7" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_UPTO_PRV_MTH_WC}]]></variableExpression>
+	</variable>
+	<variable name="sum6" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{DMD_UPTO_PRV_MTH_WC}]]></variableExpression>
+	</variable>
+	<variable name="sum5" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_UPTO_PRV_MTH_MAINT}]]></variableExpression>
+	</variable>
+	<variable name="sum4" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{OPCURRENT}]]></variableExpression>
+	</variable>
+	<variable name="sum3" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{APR_CUR_YR_WC}]]></variableExpression>
+	</variable>
+	<variable name="sum2" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{COLN_UPTO_PRV_MTH_WC}.add($F{COLN_UPTO_PRV_MTH_YESTER_YR})]]></variableExpression>
+	</variable>
+	<variable name="sum1" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{OB_MAINT_CHARGES}]]></variableExpression>
+	</variable>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="34"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="930"
+						height="34"
+						forecolor="#000000"
+						backcolor="#CCCCFF"
+						key="textField-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["DCB Opening Balance     " + $P{mvalue}+"/"+$P{year}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="49"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="36"
+						height="49"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Sl.No]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="36"
+						y="0"
+						width="259"
+						height="49"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Division Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="295"
+						y="0"
+						width="96"
+						height="49"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-4"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Maintenance Charges]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="391"
+						y="0"
+						width="96"
+						height="49"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Maintenance Collection upto Previous Month]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="487"
+						y="0"
+						width="96"
+						height="49"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Opening Balance April ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="583"
+						y="0"
+						width="110"
+						height="49"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-7"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Water Charge Demand upto Previous Month]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="693"
+						y="0"
+						width="118"
+						height="49"
+						forecolor="#003333"
+						key="textField-1"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[" Collection upto Previous Month "]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="811"
+						y="0"
+						width="119"
+						height="49"
+						forecolor="#003333"
+						key="textField-2"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Opening Balance" + $P{mvalue}]]></textFieldExpression>
+				</textField>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="20"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="295"
+						y="0"
+						width="96"
+						height="20"
+						key="textField-5"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{OB_MAINT_CHARGES}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="391"
+						y="0"
+						width="96"
+						height="20"
+						key="textField-6"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COLN_UPTO_PRV_MTH_MAINT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="487"
+						y="0"
+						width="96"
+						height="20"
+						key="textField-7"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{APR_CUR_YR_WC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="583"
+						y="0"
+						width="110"
+						height="20"
+						key="textField-8"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{DMD_UPTO_PRV_MTH_WC}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="693"
+						y="0"
+						width="118"
+						height="20"
+						key="textField-9"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{COLN_UPTO_PRV_MTH_WC}.add($F{COLN_UPTO_PRV_MTH_YESTER_YR})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="811"
+						y="0"
+						width="119"
+						height="20"
+						key="textField-10"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="1Point" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{OPCURRENT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="36"
+						height="20"
+						key="textField-17"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="36"
+						y="0"
+						width="259"
+						height="20"
+						key="textField-18"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="7" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{OFFICE_NAME}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="20"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="295"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="staticText-8"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="1Point" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Net Total]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="295"
+						y="0"
+						width="96"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="textField-11"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{sum1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="391"
+						y="0"
+						width="96"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="textField-12"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{sum5}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="487"
+						y="0"
+						width="96"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="textField-13"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{sum3}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="583"
+						y="0"
+						width="110"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="textField-14"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{sum6}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="693"
+						y="0"
+						width="118"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="textField-15"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{sum2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="811"
+						y="0"
+						width="119"
+						height="20"
+						forecolor="#003333"
+						backcolor="#FFFFFF"
+						key="textField-16"/>
+					<box topBorder="1Point" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="1Point" rightBorderColor="#000000" rightPadding="5" bottomBorder="1Point" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{sum4}]]></textFieldExpression>
+				</textField>
+			</band>
+		</summary>
+</jasperReport>

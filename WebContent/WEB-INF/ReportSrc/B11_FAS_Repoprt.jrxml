@@ -1,0 +1,1150 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="B11_FAS_Repoprt"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="900"
+		 pageHeight="595"
+		 columnWidth="850"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="20"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="year" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="office_id" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="Demand_month" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="Demand_year" isForPrompting="true" class="java.lang.Integer"/>
+	<parameter name="monthstr" isForPrompting="false" class="java.lang.String"/>
+	<queryString><![CDATA[SELECT
+ROW_NUMBER() OVER () AS "sl_no", now() AS "CURRENT_DATE",
+DIVISION_CODE as "division_code",
+DIVISION_NAME as "division_name",
+	FIN.DISTRICT_NAME as "district_name", 
+	BLOCK_NAME, 
+--	BILL_MONTH,
+	
+	PANCHAYAT_NAME as "panchayat_name", 
+	BENEFICIARY_SNO as "beneficiary_sno",
+	BENEFICIARY_NAME as "beneficiary_name", 
+	BALANCE_WC as "balance_wc" ,
+	BALANCE_MAINT  as "balance_maint", 
+	BALANCE_INT as "balance_int" ,
+		BALANCE_WC +
+	BALANCE_MAINT + 
+	BALANCE_INT AS "balance",
+	
+		case 	BILL_MONTH 
+ 			when 1 then 'JANUARY' 
+ 			when 2 then 'FEBRUARY' 
+ 			when 3 then 'MARCH' 
+			when 4 then 'APRIL' 
+			when 5 then 'MAY' 
+ 			when 6 then 'JUNE' 
+ 			when 7 then 'JULY' 
+ 			when 8 then 'AUGUST' 
+ 			when 9 then 'SEPTEMBER' 
+ 			when 10 then 'OCTOBER' 
+ 			when 11 then 'NOVEMBER' 
+ 			when 12 then 'DECEMBER' 
+ 		END AS MONTH ,
+		BILL_YEAR
+--	month,year
+	
+	
+	
+FROM
+	(
+	SELECT ROW_NUMBER
+		( ) OVER ( ORDER BY REG.REG, REG.CIR, REG.DIV, DEMAND.BENEFICIARY_TYPE_ID_SUB ) AS SL_NO,
+		REG.REG AS REGION_NAME,
+		REG.CIR AS CIRCLE_NAME,
+		REG.DIV AS DIVISION_NAME,
+		BILL_YEAR, 
+		BILL_MONTH, 
+		
+			CASE WHEN BILL_MONTH = 12 THEN 1 ELSE BILL_MONTH +1 END AS MONTH , 
+			CASE WHEN BILL_MONTH = 12 THEN BILL_YEAR+1 ELSE BILL_YEAR  END AS YEAR , 
+
+ 	case 	BILL_MONTH 
+ 			when 1 then 'JANUARY' 
+ 			when 2 then 'FEBRUARY' 
+ 			when 3 then 'MARCH' 
+			when 4 then 'APRIL' 
+			when 5 then 'MAY' 
+ 			when 6 then 'JUNE' 
+ 			when 7 then 'JULY' 
+ 			when 8 then 'AUGUST' 
+ 			when 9 then 'SEPTEMBER' 
+ 			when 10 then 'OCTOBER' 
+ 			when 11 then 'NOVEMBER' 
+ 			when 12 then 'DECEMBER' 
+ 		END AS MONTH ,
+		
+		
+		DEMAND.OFFICE_ID AS DIVISION_CODE,
+		DISTRICT.DISTRICT_NAME,
+		BLOCK.BLOCK_NAME,
+		PANCHAYAT.PANCH_NAME AS PANCHAYAT_NAME,
+		DEMAND.BENEFICIARY_SNO,
+		DEMAND.BENEFICIARY_NAME,
+		DEMAND.BENEFICIARY_TYPE_ID_SUB,
+		TYP.BEN_TYPE_DESC AS BENEFICIARY_TYPE,
+		
+		
+-- 		DEMAND.OB_WC,
+-- 		DEMAND.DMD_WC,
+-- 		COALESCE ( FAS_COLLECTION_WC.AMOUNT, 0 ) AS COLN_WC,
+		DEMAND.OB_WC + DEMAND.DMD_WC - COALESCE ( FAS_COLLECTION_WC.AMOUNT, 0 ) AS BALANCE_WC,
+		
+-- 		DEMAND.OB_MAINT,
+-- 		COALESCE ( FAS_COLLECTION_MAINT.AMOUNT, 0 ) AS COLN_MAINT,
+		DEMAND.OB_MAINT  - COALESCE ( FAS_COLLECTION_MAINT.AMOUNT, 0 ) AS BALANCE_MAINT,
+		
+		
+-- 		DEMAND.OB_INT,
+-- 		DEMAND.DMD_INT,
+-- 		COALESCE ( FAS_COLLECTION_INT.AMOUNT, 0 ) AS COLN_INT,
+		DEMAND.OB_INT + DEMAND.DMD_INT - COALESCE ( FAS_COLLECTION_INT.AMOUNT, 0 ) AS BALANCE_INT,
+		
+		
+		
+-- 		DEMAND.OB_WC + DEMAND.OB_MAINT + DEMAND.OB_INT AS OB,
+-- 		DEMAND.DMD_WC + DEMAND.DMD_INT AS DMD,
+-- 		COALESCE ( FAS_COLLECTION_WC.AMOUNT, 0 ) + COALESCE ( FAS_COLLECTION_INT.AMOUNT, 0 )  + COALESCE ( FAS_COLLECTION_INT.AMOUNT, 0 ) AS COLN,
+		DEMAND.OB_WC + DEMAND.DMD_WC - COALESCE ( FAS_COLLECTION_WC.AMOUNT, 0 ) + DEMAND.OB_INT + DEMAND.DMD_INT - COALESCE ( FAS_COLLECTION_INT.AMOUNT, 0 )+
+		DEMAND.OB_MAINT - COALESCE ( FAS_COLLECTION_MAINT.AMOUNT, 0 )   AS BALANCE 
+	FROM
+		(
+		SELECT
+			DMD.OFFICE_ID,
+			DMD.BENEFICIARY_SNO,
+			BEN2.BENEFICIARY_NAME,
+			DMD.BENEFICIARY_TYPE_ID_SUB,
+			DMD.BILL_YEAR, 
+			DMD.BILL_MONTH,
+			SUM ( OUTSTANDING_DUE_WC ) AS OUTSTANDING_DUE_WC,
+			SUM ( COLN_WC ) AS COLN_WC,
+			SUM ( OUTSTANDING_DUE_WC ) - SUM ( COLN_WC ) AS OB_WC,
+			SUM ( OUTSTANDING_DUE_MAINT ) AS OUTSTANDING_DUE_MAINT,
+			SUM ( COLN_MAINT ) AS COLN_MAINT,
+			SUM ( OUTSTANDING_DUE_MAINT ) - SUM ( COLN_MAINT ) AS OB_MAINT ,
+			SUM ( DMD_WC ) AS DMD_WC,
+			SUM ( OUTSTANDING_DUE_INT ) AS OUTSTANDING_DUE_INT,
+			SUM ( COLN_INT ) AS COLN_INT,
+			SUM ( OUTSTANDING_DUE_INT ) - SUM ( COLN_INT ) AS OB_INT,
+			SUM ( DMD_INT ) AS DMD_INT 
+		FROM
+			(
+			SELECT
+				DMD.OFFICE_ID,
+					DMD.BILL_YEAR, 
+			DMD.BILL_MONTH,
+				BEN.BENEFICIARY_TYPE_ID_SUB,
+			CASE
+					
+					WHEN BEN.BENEFICIARY_TYPE_ID_SUB = 1 THEN
+					BEN.ADDED_TO_BEN_SNO ELSE BEN.BENEFICIARY_SNO 
+				END AS BENEFICIARY_SNO,
+				COALESCE ( DMD.OB_YESTER_YR_WC, 0 ) + COALESCE ( DMD.OB_CUR_YR_WC, 0 )  AS OUTSTANDING_DUE_WC,
+				COALESCE ( DMD.OB_MAINT_CHARGES, 0 ) AS OUTSTANDING_DUE_MAINT , 
+				COALESCE ( DMD.COLN_YESTER_YR_WC, 0 ) + COALESCE ( DMD.COLN_CUR_YR_WC, 0 )  - COALESCE ( DMD.ADD_CHARGES_WC, 0 ) + COALESCE ( DMD.MINUS_CHARGES_WC, 0 ) - COALESCE ( DMD.ADD_CHARGES_MAINT, 0 ) + COALESCE ( DMD.MINUS_CHARGES_MAINT, 0 ) AS COLN_WC,
+				COALESCE ( DMD.COLN_MAINT, 0 ) - COALESCE ( DMD.ADD_CHARGES_MAINT, 0 ) + COALESCE ( DMD.MINUS_CHARGES_MAINT, 0 ) AS COLN_MAINT , 
+				COALESCE ( DMD.WC_MTH_TOTAL, 0 ) AS DMD_WC,
+				COALESCE ( DMD.OB_INT_AMT_WC, 0 ) AS OUTSTANDING_DUE_INT,
+				COALESCE ( DMD.COLN_INT_WC, 0 ) - COALESCE ( DMD.ADD_CHARGES_INT, 0 ) + COALESCE ( DMD.MINUS_CHARGES_INT, 0 ) AS COLN_INT,
+				COALESCE ( DMD.DMD_INT_FOR_MTH_WC, 0 ) AS DMD_INT 
+			FROM
+				PMS_DCB_TRN_BILL_DMD DMD
+				LEFT JOIN PMS_DCB_MST_BENEFICIARY BEN ON BEN.BENEFICIARY_SNO = DMD.BENEFICIARY_SNO 
+			WHERE
+		---		BILL_YEAR = [$DEMAND_YEAR ] 
+				BILL_YEAR = $P{Demand_year}::numeric 
+				AND BILL_MONTH =$P{Demand_month}::numeric
+			) AS DMD
+			LEFT JOIN PMS_DCB_MST_BENEFICIARY BEN2 ON BEN2.BENEFICIARY_SNO = DMD.BENEFICIARY_SNO 
+		GROUP BY
+			DMD.OFFICE_ID,
+			DMD.BENEFICIARY_SNO,
+			DMD.BENEFICIARY_TYPE_ID_SUB,
+			BEN2.BENEFICIARY_NAME ,
+			DMD.BILL_YEAR,
+			DMD.BILL_MONTH
+		) AS DEMAND -----------------------------------------------------------------------COLLECTION WC FROM FAS -----------------------------------------------
+		LEFT JOIN (
+		SELECT
+			OFFICE_ID,
+			BENEFICIARY_SNO,
+			BENEFICIARY_TYPE_ID_SUB,
+			SUM ( AMOUNT ) AS AMOUNT 
+		FROM
+			(
+			SELECT
+				TOTAL.OFFICE_ID,
+				BEN.BENEFICIARY_TYPE_ID_SUB,
+			CASE
+					
+					WHEN BEN.BENEFICIARY_TYPE_ID_SUB = 1 THEN
+					BEN.ADDED_TO_BEN_SNO ELSE BEN.BENEFICIARY_SNO 
+				END AS BENEFICIARY_SNO,
+				AMOUNT 
+			FROM
+				(
+				SELECT
+					* 
+				FROM
+					(
+					SELECT
+						OFFICE_ID,
+						BENEFICIARY_SNO,
+						SUM ( AMOUNT ) AS AMOUNT 
+					FROM
+						(
+						SELECT
+							PMS_DCB_FAS_RECEIPT_VIEW.RECEIPT_NO,
+							PMS_DCB_FAS_RECEIPT_VIEW.ACCOUNTING_FOR_OFFICE_ID AS OFFICE_ID,
+							PMS_DCB_FAS_RECEIPT_VIEW.CASHBOOK_YEAR AS YEAR,
+							PMS_DCB_FAS_RECEIPT_VIEW.CASHBOOK_MONTH AS MONTH,
+							PMS_DCB_FAS_RECEIPT_VIEW.SUB_LEDGER_TYPE_CODE,
+							PMS_DCB_FAS_RECEIPT_VIEW.SUB_LEDGER_CODE,
+							PMS_DCB_FAS_RECEIPT_VIEW.SCH_TYPE_ID,
+							PMS_DCB_FAS_RECEIPT_VIEW.SCH_SNO,
+							PMS_DCB_FAS_RECEIPT_VIEW.BENEFICIARY_NAME,
+							PMS_DCB_FAS_RECEIPT_VIEW.BENEFICIARY_SNO,
+							PMS_DCB_FAS_RECEIPT_VIEW.BENEFICIARY_TYPE_ID_SUB,
+							PMS_DCB_FAS_RECEIPT_VIEW.AMOUNT 
+						FROM
+							PMS_DCB_FAS_RECEIPT_VIEW 
+						WHERE
+							(
+								PMS_DCB_FAS_RECEIPT_VIEW.ACCOUNT_HEAD_CODE = ANY (
+									ARRAY [ 782401 :: NUMERIC,
+									782402 :: NUMERIC,
+									782403 :: NUMERIC,
+									782404 :: NUMERIC,
+									782405 :: NUMERIC,
+									782406 :: NUMERIC,
+									782407 :: NUMERIC,
+									900108 :: NUMERIC,
+									900109 :: NUMERIC ] 
+								) 
+							) 
+							AND CASHBOOK_YEAR = $P{year}::numeric
+							AND CASHBOOK_MONTH = $P{month}::numeric
+						) OPT1 
+					GROUP BY
+						OFFICE_ID,
+						BENEFICIARY_SNO 
+					) RECEIPT UNION ALL
+				SELECT
+					* 
+				FROM
+					(
+					SELECT
+						OPT4.OFFICE_ID :: NUMERIC AS OFFICE_ID,
+						OPT4.BENEFICIARY_SNO,
+						SUM ( OPT4.AMOUNT ) AS AMOUNT 
+					FROM
+						(
+						SELECT
+							PMS_DCB_OTHER_CHARGES.OFFICE_ID,
+							PMS_DCB_OTHER_CHARGES.BENEFICIARY_SNO,
+							PMS_DCB_OTHER_CHARGES.CASHBOOK_YEAR AS YEAR,
+							PMS_DCB_OTHER_CHARGES.CASHBOOK_MONTH AS MONTH,
+							SUM (
+							COALESCE ( CASE WHEN PMS_DCB_OTHER_CHARGES.CR_DR_INDICATOR :: TEXT = 'CR' :: TEXT THEN PMS_DCB_OTHER_CHARGES.AMOUNT ELSE NULL :: NUMERIC END, 0 :: NUMERIC ) 
+			) AS AMOUNT 
+		FROM
+			PMS_DCB_OTHER_CHARGES 
+		WHERE
+			(
+				PMS_DCB_OTHER_CHARGES.ACCOUNT_HEAD_CODE IN ( SELECT DISTINCT PMS_DCB_RECEIPT_ACCOUNT_MAP.ACCOUNT_HEAD_CODE FROM PMS_DCB_RECEIPT_ACCOUNT_MAP WHERE PMS_DCB_RECEIPT_ACCOUNT_MAP.COLLECTION_TYPE = 7 :: NUMERIC ) ---ONLY FOR EDAPADI
+				
+				AND PMS_DCB_OTHER_CHARGES.ACCOUNT_HEAD_CODE NOT IN ( SELECT DISTINCT PMS_DCB_RECEIPT_ACCOUNT_MAP.ACCOUNT_HEAD_CODE FROM PMS_DCB_RECEIPT_ACCOUNT_MAP WHERE PMS_DCB_RECEIPT_ACCOUNT_MAP.ACCOUNT_HEAD_CODE :: VARCHAR LIKE'780%' AND OFFICE_ID = '7210' ) ---ONLY FOR EDAPADI
+				
+			) 
+		GROUP BY
+			PMS_DCB_OTHER_CHARGES.OFFICE_ID,
+			PMS_DCB_OTHER_CHARGES.BENEFICIARY_SNO,
+			PMS_DCB_OTHER_CHARGES.CASHBOOK_YEAR,
+			PMS_DCB_OTHER_CHARGES.CASHBOOK_MONTH 
+		ORDER BY
+			PMS_DCB_OTHER_CHARGES.OFFICE_ID,
+			PMS_DCB_OTHER_CHARGES.BENEFICIARY_SNO 
+		) AS OPT4 
+	WHERE
+		OPT4.YEAR =$P{year}::NUMERIC
+
+		AND OPT4.MONTH=$P{month}::numeric
+
+	GROUP BY
+		OPT4.OFFICE_ID,
+		OPT4.BENEFICIARY_SNO 
+	) ADJ 
+	) TOTAL
+	LEFT JOIN PMS_DCB_MST_BENEFICIARY BEN ON BEN.BENEFICIARY_SNO = TOTAL.BENEFICIARY_SNO 
+	) AS OPT1 
+GROUP BY
+	OFFICE_ID,
+	BENEFICIARY_SNO,
+	BENEFICIARY_TYPE_ID_SUB 
+	) FAS_COLLECTION_WC ON FAS_COLLECTION_WC.OFFICE_ID = DEMAND.OFFICE_ID 
+	AND FAS_COLLECTION_WC.BENEFICIARY_SNO = DEMAND.BENEFICIARY_SNO --------------------------------------------------------CURRENT MONTH COLLECTION INTEREST --------------------------------------------------------
+	LEFT JOIN (
+	SELECT
+		OFFICE_ID,
+		BENEFICIARY_SNO,
+		BENEFICIARY_TYPE_ID_SUB,
+		SUM ( AMOUNT ) AS AMOUNT 
+	FROM
+		(
+		SELECT
+			TOTAL.OFFICE_ID,
+			BEN.BENEFICIARY_TYPE_ID_SUB,
+		CASE
+				
+				WHEN BEN.BENEFICIARY_TYPE_ID_SUB = 1 THEN
+				BEN.ADDED_TO_BEN_SNO ELSE BEN.BENEFICIARY_SNO 
+			END AS BENEFICIARY_SNO,
+			AMOUNT 
+		FROM
+			(
+			SELECT
+				* 
+			FROM
+				(
+				SELECT
+					OFFICE_ID,
+					BENEFICIARY_SNO,
+					SUM ( AMOUNT ) AS AMOUNT 
+				FROM
+					(
+					SELECT
+						PMS_DCB_FAS_RECEIPT_VIEW.RECEIPT_NO,
+						PMS_DCB_FAS_RECEIPT_VIEW.ACCOUNTING_FOR_OFFICE_ID AS OFFICE_ID,
+						PMS_DCB_FAS_RECEIPT_VIEW.CASHBOOK_YEAR AS YEAR,
+						PMS_DCB_FAS_RECEIPT_VIEW.CASHBOOK_MONTH AS MONTH,
+						PMS_DCB_FAS_RECEIPT_VIEW.SUB_LEDGER_TYPE_CODE,
+						PMS_DCB_FAS_RECEIPT_VIEW.SUB_LEDGER_CODE,
+						PMS_DCB_FAS_RECEIPT_VIEW.SCH_TYPE_ID,
+						PMS_DCB_FAS_RECEIPT_VIEW.SCH_SNO,
+						PMS_DCB_FAS_RECEIPT_VIEW.BENEFICIARY_NAME,
+						PMS_DCB_FAS_RECEIPT_VIEW.BENEFICIARY_SNO,
+						PMS_DCB_FAS_RECEIPT_VIEW.BENEFICIARY_TYPE_ID_SUB,
+						PMS_DCB_FAS_RECEIPT_VIEW.AMOUNT 
+					FROM
+						PMS_DCB_FAS_RECEIPT_VIEW 
+					WHERE
+						( PMS_DCB_FAS_RECEIPT_VIEW.ACCOUNT_HEAD_CODE = ANY ( ARRAY [ 120601 :: NUMERIC ] ) ) 
+						AND CASHBOOK_YEAR =  $P{year}::numeric
+ 
+						AND CASHBOOK_MONTH = $P{month}::numeric 
+					) OPT1 
+				GROUP BY
+					OFFICE_ID,
+					BENEFICIARY_SNO 
+				) RECEIPT UNION ALL
+			SELECT
+				* 
+			FROM
+				(
+				SELECT
+					OPT4.OFFICE_ID :: NUMERIC AS OFFICE_ID,
+					OPT4.BENEFICIARY_SNO,
+					SUM ( OPT4.AMOUNT ) AS AMOUNT 
+				FROM
+					(
+					SELECT
+						PMS_DCB_OTHER_CHARGES.OFFICE_ID,
+						PMS_DCB_OTHER_CHARGES.BENEFICIARY_SNO,
+						PMS_DCB_OTHER_CHARGES.CASHBOOK_YEAR AS YEAR,
+						PMS_DCB_OTHER_CHARGES.CASHBOOK_MONTH AS MONTH,
+						SUM (
+						COALESCE ( CASE WHEN PMS_DCB_OTHER_CHARGES.CR_DR_INDICATOR :: TEXT = 'CR' :: TEXT THEN PMS_DCB_OTHER_CHARGES.AMOUNT ELSE NULL :: NUMERIC END, 0 :: NUMERIC ) 
+		) AS AMOUNT 
+	FROM
+		PMS_DCB_OTHER_CHARGES 
+	WHERE
+		( PMS_DCB_OTHER_CHARGES.ACCOUNT_HEAD_CODE IN ( SELECT DISTINCT PMS_DCB_RECEIPT_ACCOUNT_MAP.ACCOUNT_HEAD_CODE FROM PMS_DCB_RECEIPT_ACCOUNT_MAP WHERE PMS_DCB_RECEIPT_ACCOUNT_MAP.COLLECTION_TYPE = 9 :: NUMERIC ) ) 
+	GROUP BY
+		PMS_DCB_OTHER_CHARGES.OFFICE_ID,
+		PMS_DCB_OTHER_CHARGES.BENEFICIARY_SNO,
+		PMS_DCB_OTHER_CHARGES.CASHBOOK_YEAR,
+		PMS_DCB_OTHER_CHARGES.CASHBOOK_MONTH 
+	ORDER BY
+		PMS_DCB_OTHER_CHARGES.OFFICE_ID,
+		PMS_DCB_OTHER_CHARGES.BENEFICIARY_SNO 
+	) AS OPT4 
+WHERE
+	OPT4.YEAR =  $P{year}::numeric
+ 
+	AND OPT4.MONTH = $P{month}::numeric
+ 
+GROUP BY
+	OPT4.OFFICE_ID,
+	OPT4.BENEFICIARY_SNO 
+	) ADJ 
+	) TOTAL
+	LEFT JOIN PMS_DCB_MST_BENEFICIARY BEN ON BEN.BENEFICIARY_SNO = TOTAL.BENEFICIARY_SNO 
+	) AS OPT1 
+GROUP BY
+	OFFICE_ID,
+	BENEFICIARY_SNO,
+	BENEFICIARY_TYPE_ID_SUB 
+	) FAS_COLLECTION_INT ON FAS_COLLECTION_INT.OFFICE_ID = DEMAND.OFFICE_ID 
+	AND FAS_COLLECTION_INT.BENEFICIARY_SNO = DEMAND.BENEFICIARY_SNO 
+	
+		LEFT JOIN 
+											(
+											select TOTAL.office_id , TOTAL.beneficiary_sno , beneficiary_type_id_sub , sum(amount) as AMOUNT  from (
+
+										SELECT
+														* 
+											FROM
+														(
+														SELECT
+															office_id,
+															beneficiary_sno,
+															SUM ( amount ) AS amount 
+														FROM
+															(
+															SELECT
+																pms_dcb_fas_receipt_view.receipt_no,
+																pms_dcb_fas_receipt_view.accounting_for_office_id AS office_id,
+																pms_dcb_fas_receipt_view.cashbook_year AS YEAR,
+																pms_dcb_fas_receipt_view.cashbook_month AS MONTH,
+																pms_dcb_fas_receipt_view.sub_ledger_type_code,
+																pms_dcb_fas_receipt_view.sub_ledger_code,
+																pms_dcb_fas_receipt_view.sch_type_id,
+																pms_dcb_fas_receipt_view.sch_sno,
+																pms_dcb_fas_receipt_view.beneficiary_name,
+																pms_dcb_fas_receipt_view.beneficiary_sno,
+																pms_dcb_fas_receipt_view.beneficiary_type_id_sub,
+																pms_dcb_fas_receipt_view.amount 
+															FROM
+																pms_dcb_fas_receipt_view 
+															WHERE
+																( pms_dcb_fas_receipt_view.account_head_code in (
+											select
+												ACCOUNT_HEAD_CODE
+											from
+												PMS_DCB_RECEIPT_ACCOUNT_MAP
+											where
+												sch_type_id = 12
+												and ACTIVE_STATUS = 'L'
+												and collection_type = 8 ) ) 
+																AND cashbook_year =  $P{year}::numeric
+ 
+																AND cashbook_month =  $P{month}::numeric
+ 
+															) opt1 
+														GROUP BY
+															office_id,
+															beneficiary_sno
+													) as RECEIPT
+														
+														union all 
+														
+											SELECT
+														* 
+													FROM
+														(
+														SELECT
+															opt4.office_id :: NUMERIC AS office_id,
+															opt4.beneficiary_sno,
+															SUM ( opt4.amount ) AS amount 
+														FROM
+															(
+															SELECT
+																pms_dcb_other_charges.office_id,
+																pms_dcb_other_charges.beneficiary_sno,
+																pms_dcb_other_charges.cashbook_year AS YEAR,
+																pms_dcb_other_charges.cashbook_month AS MONTH,
+																SUM (
+																COALESCE ( CASE WHEN pms_dcb_other_charges.cr_dr_indicator :: TEXT = 'CR' :: TEXT THEN pms_dcb_other_charges.amount ELSE NULL :: NUMERIC END, 0 :: NUMERIC ) 
+												) AS amount 
+											FROM
+												pms_dcb_other_charges 
+											WHERE
+												( pms_dcb_other_charges.account_head_code IN ( SELECT DISTINCT pms_dcb_receipt_account_map.account_head_code FROM pms_dcb_receipt_account_map WHERE pms_dcb_receipt_account_map.collection_type = 8 :: NUMERIC ) ) 
+											GROUP BY
+												pms_dcb_other_charges.office_id,
+												pms_dcb_other_charges.beneficiary_sno,
+												pms_dcb_other_charges.cashbook_year,
+												pms_dcb_other_charges.cashbook_month 
+											ORDER BY
+												pms_dcb_other_charges.office_id,
+												pms_dcb_other_charges.beneficiary_sno 
+											) AS opt4 
+										WHERE
+											opt4.YEAR = $P{year}::numeric
+
+											AND opt4.MONTH = $P{month}::numeric
+ 
+										GROUP BY
+											opt4.office_id,
+											opt4.beneficiary_sno 
+											) as ADJUSTMENT
+											
+											) as TOTAL
+											lEFT JOIN pms_dcb_mst_beneficiary BEN ON BEN.BENEFICIARY_SNO = TOTAL.BENEFICIARY_SNO
+											group by TOTAL.office_id , TOTAL.beneficiary_sno , BEN.beneficiary_type_id_sub 
+											
+											) FAS_COLLECTION_MAINT ON  FAS_COLLECTION_MAINT.OFFICE_ID = DEMAND.OFFICE_ID 
+	AND FAS_COLLECTION_MAINT.BENEFICIARY_SNO = DEMAND.BENEFICIARY_SNO 
+	
+	-----------------------------------------------------MASTERS ---
+	LEFT JOIN PMS_DCB_MST_BENEFICIARY BEN ON BEN.BENEFICIARY_SNO = DEMAND.BENEFICIARY_SNO
+	LEFT JOIN PMS_DCB_BEN_TYPE TYP ON TYP.BEN_TYPE_ID = BEN.BENEFICIARY_TYPE_ID_SUB
+	LEFT JOIN COM_MST_DISTRICTS DISTRICT ON DISTRICT.DISTRICT_CODE = BEN.DISTRICT_CODE
+	LEFT JOIN COM_MST_BLOCKS BLOCK ON BLOCK.BLOCK_SNO = BEN.BLOCK_SNO
+	LEFT JOIN COM_MST_PANCHAYATS PANCHAYAT ON PANCHAYAT.PANCH_SNO = BEN.VILLAGE_PANCHAYAT_SNO
+	LEFT JOIN REGION_CIR_DIV_VIEW REG ON REG.DIDID = DEMAND.OFFICE_ID 
+	) AS FIN 
+
+---	WHERE DIVISION_CODE = 7343 ::numeric
+WHERE DIVISION_CODE = $P{office_id} ::numeric and BENEFICIARY_TYPE_ID_SUB=6 order by balance desc
+;]]></queryString>
+
+	<field name="sl_no" class="java.lang.Long"/>
+	<field name="CURRENT_DATE" class="java.sql.Timestamp"/>
+	<field name="division_code" class="java.math.BigDecimal"/>
+	<field name="division_name" class="java.lang.String"/>
+	<field name="district_name" class="java.lang.String"/>
+	<field name="block_name" class="java.lang.String"/>
+	<field name="panchayat_name" class="java.lang.String"/>
+	<field name="beneficiary_sno" class="java.math.BigDecimal"/>
+	<field name="beneficiary_name" class="java.lang.String"/>
+	<field name="balance_wc" class="java.math.BigDecimal"/>
+	<field name="balance_maint" class="java.math.BigDecimal"/>
+	<field name="balance_int" class="java.math.BigDecimal"/>
+	<field name="balance" class="java.math.BigDecimal"/>
+	<field name="month" class="java.lang.String"/>
+	<field name="bill_year" class="java.math.BigDecimal"/>
+
+	<variable name="tot_balance" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance}]]></variableExpression>
+	</variable>
+	<variable name="tot_balance_wc" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance_wc}]]></variableExpression>
+	</variable>
+	<variable name="tot_balance_int" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance_int}]]></variableExpression>
+	</variable>
+	<variable name="tot_balance_maint" class="java.math.BigDecimal" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[$F{balance_maint}]]></variableExpression>
+	</variable>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="49"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="183"
+						y="6"
+						width="491"
+						height="20"
+						key="textField-1"/>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["DCB Due As On Date"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="714"
+						y="19"
+						width="64"
+						height="23"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Run Date :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="78"
+						y="29"
+						width="210"
+						height="20"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{division_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="777"
+						y="20"
+						width="73"
+						height="23"
+						key="textField-11"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="28"
+						width="77"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-21"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[DIVISION :]]></text>
+				</staticText>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="30"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="8"
+						width="34"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[SLNO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="550"
+						y="1"
+						width="90"
+						height="28"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-3"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[WATERCHARGES
+DUE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="250"
+						y="11"
+						width="99"
+						height="15"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PANCHAYAT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="787"
+						y="2"
+						width="58"
+						height="28"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[TOTAL
+  DUE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="726"
+						y="1"
+						width="58"
+						height="28"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[MAINT
+DUE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="643"
+						y="1"
+						width="70"
+						height="28"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-10"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[INTEREST
+ DUE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="120"
+						y="11"
+						width="68"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-16"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[BLOCK]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="440"
+						y="1"
+						width="90"
+						height="28"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-17"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[BENEFICIARY
+  NAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="350"
+						y="1"
+						width="80"
+						height="28"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-18"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[BENEFICIARY
+    CODE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="42"
+						y="9"
+						width="67"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-19"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[DISTRICT]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="-39"
+						y="1"
+						width="919"
+						height="1"
+						key="line-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="36"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="2"
+						y="10"
+						width="29"
+						height="20"
+						key="textField"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Dotted"/>
+</box>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{sl_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="570"
+						y="11"
+						width="55"
+						height="20"
+						key="textField"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Dotted"/>
+					<topPen lineWidth="0.0" lineStyle="Dotted"/>
+					<leftPen lineWidth="0.0" lineStyle="Dotted"/>
+					<bottomPen lineWidth="0.0" lineStyle="Dotted"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Right">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{balance_wc}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="640"
+						y="11"
+						width="72"
+						height="20"
+						key="textField"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Right">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{balance_int}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="715"
+						y="11"
+						width="47"
+						height="20"
+						key="textField"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Dotted"/>
+					<topPen lineWidth="0.0" lineStyle="Dotted"/>
+					<leftPen lineWidth="0.0" lineStyle="Dotted"/>
+					<bottomPen lineWidth="0.0" lineStyle="Dotted"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Right">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{balance_maint}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="771"
+						y="11"
+						width="70"
+						height="20"
+						key="textField"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Right">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{balance}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="260"
+						y="11"
+						width="119"
+						height="20"
+						key="textField"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{panchayat_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="120"
+						y="10"
+						width="140"
+						height="20"
+						key="textField-2"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{block_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="430"
+						y="11"
+						width="124"
+						height="20"
+						key="textField-3"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Dotted"/>
+					<topPen lineWidth="0.0" lineStyle="Dotted"/>
+					<leftPen lineWidth="0.0" lineStyle="Dotted"/>
+					<bottomPen lineWidth="0.0" lineStyle="Dotted"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{beneficiary_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="390"
+						y="11"
+						width="37"
+						height="20"
+						key="textField-4"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Dotted"/>
+					<topPen lineWidth="0.0" lineStyle="Dotted"/>
+					<leftPen lineWidth="0.0" lineStyle="Dotted"/>
+					<bottomPen lineWidth="0.0" lineStyle="Dotted"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+</box>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{beneficiary_sno}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="50"
+						y="10"
+						width="73"
+						height="20"
+						key="textField-9"/>
+					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Dotted"/>
+</box>
+					<textElement textAlignment="Left">
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{district_name}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						x="-39"
+						y="1"
+						width="919"
+						height="1"
+						key="line-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="5"  isSplitAllowed="true" >
+				<line direction="TopDown">
+					<reportElement
+						x="-39"
+						y="1"
+						width="919"
+						height="1"
+						key="line-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="2"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="32"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="782"
+						y="-1"
+						width="64"
+						height="20"
+						key="textField-5"/>
+					<box></box>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{tot_balance}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="559"
+						y="0"
+						width="77"
+						height="20"
+						key="textField-6"/>
+					<box></box>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{tot_balance_wc}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="649"
+						y="0"
+						width="70"
+						height="20"
+						key="textField-7"/>
+					<box></box>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{tot_balance_int}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="719"
+						y="-1"
+						width="40"
+						height="20"
+						key="textField-8"/>
+					<box></box>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$V{tot_balance_maint}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="460"
+						y="-2"
+						width="89"
+						height="25"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-20"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="12" isBold="true"/>
+					</textElement>
+				<text><![CDATA[TOTAL]]></text>
+				</staticText>
+			</band>
+		</lastPageFooter>
+		<summary>
+			<band height="2"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

@@ -1,0 +1,131 @@
+
+.tab 
+{
+	border:1px solid green;
+	border-collapse:collapse;
+	border-color: skyblue; 
+	
+}
+
+.tb2 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 70px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:blue;
+    font-weight: bold;
+    text-align: right;
+}
+.tb0 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 30px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:black;
+    font-weight: bold;
+}
+
+.tblong {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 390px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:blue;
+    font-weight: bold;
+      text-align: left;
+}
+.tbhead4 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 390px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:black;
+    font-weight: bold;
+    text-align: center;
+}
+.tbhead2 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 70px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:black;
+    font-weight: bold;
+    text-align: center;
+} 
+
+.tarea {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 220px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:blue;
+    font-weight: bold;
+    text-align: right;
+} 
+.tb4 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 330px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:black;
+    font-weight: bold;
+} 
+.tb5 {
+	background-image: url(images/bg.png);
+	border: 1px solid #6297BC;
+	width: 283px;
+	font-family: sans-serif;
+    font-size: 8pt;
+    color:blue;
+    font-weight: bold;
+}
+ .lbl
+ {
+ font-family: sans-serif;
+ font-size: 9pt;
+ font-weight: bold;
+ }
+ 
+  .lbl2
+ {
+ font-family: sans-serif;
+ font-size: 7pt;
+ font-weight: bold;
+ text-align: left;
+ }  
+ 
+  .headlbl
+ {
+ font-family: sans-serif;
+ font-size: 11pt;
+ font-weight: bold;
+ }      
+ 
+ .btn
+  
+ {
+    
+ 	font-size:9pt;
+ 	background-color:FFDFFF;
+    color:block;
+    background-image: url('../images/bg.gif');
+     
+ }
+ 
+ .amelabel 
+	{
+		font-weight: bold;
+		display: block;
+		width: 80px;
+		float: left;
+		font-size:9pt;
+	}
+ 
+ 

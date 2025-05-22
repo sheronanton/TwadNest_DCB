@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="MIS_BEN_Actual"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="798"
+		 pageHeight="842"
+		 columnWidth="798"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="monthval" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="month" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="year" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="office_id" isForPrompting="true" class="java.lang.Integer">
+		<defaultValueExpression ><![CDATA[$P{office_id}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ctxpath" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="pyear" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="pmonth" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="arr_set" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="curset" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="off_name" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="btypesno" isForPrompting="true" class="java.lang.Integer"/>
+	<queryString><![CDATA[SELECT rec1.OFFICE_ID,
+  bt.BEN_TYPE_GROUP_NAME,
+  rec1.BEN_TYPE_GROUP,
+  rec1.DISTRICT_CODE,
+  d.DISTRICT_NAME,
+  BENEFICIARY_SNO,
+  rec1.BENEFICIARY_NAME ,
+  DECODE(bl.BLOCK_NAME,'0',NULL,bl.BLOCK_NAME) AS BLOCK_NAME ,
+  case when BLOCK_SNO =0 then null else BLOCK_SNO end as BLOCK_SNO,
+  (NET_DUE_19-DMD_FOR_MTH_WC_10)/100000 as arrdmd
+,
+  ( (COLN_FOR_MTH_YES_YR_WC_14+COLN_FOR_MTH_WC_15) -DMD_FOR_MTH_WC_10)/100000 AS arrcol,
+  CASE
+    WHEN (rec1.NET_DUE_19           -DMD_FOR_MTH_WC_10) !=0
+    
+  THEN  (( ROUND( ( ( COLN_FOR_MTH_YES_YR_WC_14+COLN_FOR_MTH_WC_15)-DMD_FOR_MTH_WC_10  ) ,2) ) / ROUND((to_number(rec1.NET_DUE_19)-to_number(DMD_FOR_MTH_WC_10 )),2))*100
+
+
+
+    ELSE NULL
+  END                                                   AS avg1,
+  (DMD_FOR_MTH_WC_10         /100000)                     AS curdmd,
+  (COLN_FOR_MTH_YES_YR_WC_14+COLN_FOR_MTH_WC_15)/100000 AS curcoll,
+  CASE
+    WHEN (DMD_FOR_MTH_WC_10) !=0
+    THEN ROUND( ((COLN_FOR_MTH_WC_15+COLN_FOR_MTH_YES_YR_WC_14) *100)/ (DMD_FOR_MTH_WC_10),2)
+    ELSE NULL
+  END AS avg2
+FROM (
+  ( SELECT DISTINCT BEN_TYPE_GROUP,BEN_TYPE_GROUP_NAME FROM PMS_DCB_BEN_TYPE where BEN_TYPE_GROUP=$P{btypesno}
+  )bt
+ JOIN
+  (SELECT OFFICE_ID,
+    BEN_TYPE_GROUP,
+    DISTRICT_CODE,
+    BENEFICIARY_SNO,
+    BLOCK_SNO ,BENEFICIARY_NAME,
+    SUM(NET_DUE)                AS NET_DUE_19,
+    SUM(COLN_FOR_MTH_YES_YR_WC) AS COLN_FOR_MTH_YES_YR_WC_14,    
+     SUM(DMD_FOR_MTH_WC) AS DMD_FOR_MTH_WC_10 
+  FROM PMS_DCB_LEDGER_ACTUAL  
+  WHERE office_id=$P{office_id}
+  AND MONTH      =$P{pmonth}
+  AND YEAR       =$P{pyear}
+  GROUP BY OFFICE_ID,
+    BEN_TYPE_GROUP,
+    DISTRICT_CODE,
+    BLOCK_SNO,
+    BENEFICIARY_SNO,BENEFICIARY_NAME
+  )rec1
+ON rec1.BEN_TYPE_GROUP=bt.BEN_TYPE_GROUP
+JOIN
+  (SELECT OFFICE_ID,
+   SUM(COLN_FOR_MTH_WC)        AS COLN_FOR_MTH_WC_15,
+    BEN_TYPE_GROUP,
+    DISTRICT_CODE,    
+    BLOCK_SNO,BENEFICIARY_SNO
+  FROM PMS_DCB_LEDGER_ACTUAL
+  WHERE YEAR   =$P{year}
+  AND MONTH    =$P{month}
+  AND office_id=$P{office_id}
+  GROUP BY OFFICE_ID,
+    DISTRICT_CODE,
+    BEN_TYPE_GROUP ,
+    DISTRICT_CODE,
+    BENEFICIARY_SNO,
+    BLOCK_SNO
+  )rec2
+ON rec2.BEN_TYPE_GROUP   =bt.BEN_TYPE_GROUP
+AND rec2.OFFICE_ID       =rec1.OFFICE_ID
+AND rec2.BENEFICIARY_SNO =rec1.BENEFICIARY_SNO
+AND rec2.BEN_TYPE_GROUP  =rec1.BEN_TYPE_GROUP
+AND rec2. BLOCK_SNO      =rec1. BLOCK_SNO
+JOIN
+  ( SELECT DISTINCT DISTRICT_CODE, DISTRICT_NAME FROM PMS_DCB_LEDGER_ACTUAL
+  )d
+ON d.DISTRICT_CODE=rec1.DISTRICT_CODE
+
+JOIN
+  ( SELECT DISTINCT BLOCK_SNO, BLOCK_NAME FROM PMS_DCB_LEDGER_ACTUAL
+  )bl
+ON bl.BLOCK_SNO=rec1.BLOCK_SNO )
+ORDER BY BEN_TYPE_GROUP,DISTRICT_CODE,BLOCK_SNO]]></queryString>
+
+	<field name="OFFICE_ID" class="java.math.BigDecimal"/>
+	<field name="BEN_TYPE_GROUP_NAME" class="java.lang.String"/>
+	<field name="BEN_TYPE_GROUP" class="java.math.BigDecimal"/>
+	<field name="DISTRICT_CODE" class="java.math.BigDecimal"/>
+	<field name="DISTRICT_NAME" class="java.lang.String"/>
+	<field name="BENEFICIARY_SNO" class="java.math.BigDecimal"/>
+	<field name="BENEFICIARY_NAME" class="java.lang.String"/>
+	<field name="BLOCK_NAME" class="java.lang.String"/>
+	<field name="BLOCK_SNO" class="java.lang.Integer"/>
+	<field name="ARRDMD" class="java.math.BigDecimal"/>
+	<field name="ARRCOL" class="java.math.BigDecimal"/>
+	<field name="AVG1" class="java.math.BigDecimal"/>
+	<field name="CURDMD" class="java.math.BigDecimal"/>
+	<field name="CURCOLL" class="java.math.BigDecimal"/>
+	<field name="AVG2" class="java.math.BigDecimal"/>
+
+	<variable name="blck" class="java.lang.Integer" resetType="None" calculation="Count">
+		<variableExpression><![CDATA[ ]]></variableExpression>
+	</variable>
+
+		<group  name="OFFICE_ID" >
+			<groupExpression><![CDATA[$F{OFFICE_ID}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="BTYPE" >
+			<groupExpression><![CDATA[$F{BEN_TYPE_GROUP}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="dis" >
+			<groupExpression><![CDATA[$F{DISTRICT_NAME}]]></groupExpression>
+			<groupHeader>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="-2"
+						width="796"
+						height="20"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="131" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{DISTRICT_NAME}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="bl" >
+			<groupExpression><![CDATA[$F{BLOCK_NAME}]]></groupExpression>
+			<groupHeader>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="796"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="257" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BLOCK_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="363"
+						y="0"
+						width="27"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$F{BLOCK_SNO}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="18"  isSplitAllowed="true" >
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="0"
+						width="796"
+						height="18"
+						key="subreport-1"
+						positionType="Float"/>
+					<subreportParameter  name="office_id">
+						<subreportParameterExpression><![CDATA[$P{office_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="month">
+						<subreportParameterExpression><![CDATA[$P{month}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="year">
+						<subreportParameterExpression><![CDATA[$P{year}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="blksno">
+						<subreportParameterExpression><![CDATA[$F{BLOCK_SNO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="pyear">
+						<subreportParameterExpression><![CDATA[$P{pyear}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="pmonth">
+						<subreportParameterExpression><![CDATA[$P{pmonth}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="blkname">
+						<subreportParameterExpression><![CDATA[$F{BLOCK_NAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{ctxpath} + "MIS_BEN_Actual_subreport0.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+			</groupFooter>
+		</group>
+		<group  name="ben" >
+			<groupExpression><![CDATA[$F{BENEFICIARY_NAME}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="18"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="270"
+						y="0"
+						width="178"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{BENEFICIARY_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="448"
+						y="0"
+						width="58"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ARRDMD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="506"
+						y="0"
+						width="58"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{ARRCOL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="561"
+						y="0"
+						width="43"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="621"
+						y="0"
+						width="61"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CURDMD}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="682"
+						y="0"
+						width="64"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{CURCOLL}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="###0" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="746"
+						y="0"
+						width="50"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" rightPadding="4" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{AVG2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="245"
+						y="0"
+						width="26"
+						height="18"
+						key="textField"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" leftPadding="1" rightBorder="None" rightBorderColor="#000000" rightPadding="5" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$V{bl_COUNT} +"."]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>
